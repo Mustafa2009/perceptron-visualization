@@ -3,499 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Single Perceptron Training Visualization</title>
+    <title>Perceptron Visualization Suite</title>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
-        .node {
-            transition: all 0.3s ease-in-out;
+        .tab-button {
+            transition: all 0.3s ease;
         }
-        .input-node { fill: #60a5fa; } /* blue-400 */
-        .output-node { fill: #f87171; } /* red-400 */
-        .bias-node { fill: #a78bfa; } /* violet-400 */
-        
-        .node-text {
-            font-size: 14px;
-            font-weight: bold;
-            fill: #ffffff;
-            text-anchor: middle;
-            dominant-baseline: central;
-            pointer-events: none;
+        .tab-button.active {
+            border-color: #3b82f6; /* blue-500 */
+            background-color: #eff6ff; /* blue-50 */
+            color: #1e40af; /* blue-800 */
         }
-        .value-text {
-            font-size: 12px;
-            font-family: monospace;
-            fill: #1f2937; /* gray-800 */
-        }
-        .weight-text {
-            font-size: 10px;
-            font-family: monospace;
-            fill: #4b5563; /* gray-600 */
-        }
-
-        .line {
-            stroke: #9ca3af; /* gray-400 */
-            stroke-width: 1.5;
-            transition: all 0.3s ease-in-out;
-        }
-
-        /* Highlighting classes */
-        .node-highlight {
-            stroke: #2563eb; /* blue-600 */
-            stroke-width: 4;
-        }
-        .line-highlight {
-            stroke: #db2777; /* pink-600 */
-            stroke-width: 4;
-        }
-        .output-highlight {
-            stroke: #16a34a; /* green-600 */
-            stroke-width: 4;
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .highlight-op { color: #ef4444; } /* red-500 */
-        .highlight-res { color: #22c55e; } /* green-500 */
+        .node { transition: all 0.3s ease-in-out; }
+        .input-node { fill: #60a5fa; }
+        .output-node { fill: #f87171; }
+        .bias-node { fill: #a78bfa; }
+        .node-text { font-size: 14px; font-weight: bold; fill: #ffffff; text-anchor: middle; dominant-baseline: central; pointer-events: none; }
+        .value-text { font-size: 12px; font-family: monospace; fill: #1f2937; }
+        .weight-text { font-size: 10px; font-family: monospace; fill: #4b5563; }
+        .line { stroke: #9ca3af; stroke-width: 1.5; transition: all 0.3s ease-in-out; }
+        .node-highlight { stroke: #2563eb; stroke-width: 4; }
+        .line-highlight { stroke: #db2777; stroke-width: 4; }
+        .output-highlight { stroke: #16a34a; stroke-width: 4; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .highlight-op { color: #ef4444; }
+        .highlight-res { color: #22c55e; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex flex-col items-center min-h-screen p-4">
+<body class="bg-gray-100 flex flex-col items-center min-h-screen p-4">
 
-    <div class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6">
-        <h1 class="text-3xl font-bold text-center text-gray-900 mb-2">Single Perceptron Training</h1>
-        <p class="text-center text-gray-500 mb-6">Visualizing the step-by-step weight adjustment process.</p>
+    <div class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 md:p-8">
+        <!-- Tab Navigation -->
+        <div class="border-b border-gray-200 mb-6">
+            <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+                <button id="tabBtn1" class="tab-button active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                    Decision Boundary View
+                </button>
+                <button id="tabBtn2" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Network View
+                </button>
+            </nav>
+        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <!-- SVG Network Diagram -->
-            <div id="network-container" class="w-full">
-                <svg id="network-svg" viewBox="0 0 400 300"></svg>
-            </div>
-            
-            <!-- Step-by-step Explanation -->
-            <div id="explanation-container" class="bg-gray-50 p-6 rounded-lg h-full min-h-[300px]">
-                <!-- Content injected by JS -->
+        <!-- Tab Content -->
+        <div id="tabContent1" class="tab-content">
+            <!-- Content from original visualization -->
+            <h1 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-2">Perceptron Classifier: Weight Update Example</h1>
+            <p class="text-gray-600 text-center mb-6">A step-by-step visualization of the Perceptron learning algorithm.</p>
+            <div class="flex flex-col md:flex-row gap-6">
+                <div class="w-full md:w-2/3 border rounded-lg p-4 bg-gray-50">
+                    <svg id="chart-tab1" class="w-full h-auto" viewbox="0 0 500 500"></svg>
+                </div>
+                <div class="w-full md:w-1/3">
+                    <div class="space-y-3 mb-6">
+                        <button id="step0-tab1" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">1. Plot Data Points</button>
+                        <button id="step1-tab1" class="w-full bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg cursor-not-allowed" disabled>2. Draw Initial Decision Boundary</button>
+                        <button id="step2-tab1" class="w-full bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg cursor-not-allowed" disabled>3. Update Weights & Boundary</button>
+                        <button id="reset-tab1" class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg">Reset</button>
+                    </div>
+                    <div id="explanation-tab1" class="bg-blue-50 border-l-4 border-blue-500 text-blue-800 p-4 rounded-r-lg">
+                        <h3 class="font-bold mb-2">Instructions</h3>
+                        <p>Click the buttons to see the algorithm in action.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="mt-8 flex justify-center gap-4">
-            <button id="prev-btn" class="bg-gray-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-opacity-50">
-                Previous
-            </button>
-            <button id="next-btn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition-colors shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
-                Start
-            </button>
+        <div id="tabContent2" class="tab-content hidden">
+            <!-- Content from new visualization -->
+            <h1 class="text-3xl font-bold text-center text-gray-900 mb-2">Single Perceptron Training</h1>
+            <p class="text-center text-gray-500 mb-6">Visualizing the step-by-step weight adjustment process.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div id="network-container-tab2" class="w-full">
+                    <svg id="network-svg-tab2" viewBox="0 0 400 300"></svg>
+                </div>
+                <div id="explanation-container-tab2" class="bg-gray-50 p-6 rounded-lg h-full min-h-[300px]"></div>
+            </div>
+            <div class="mt-8 flex justify-center gap-4">
+                <button id="prev-btn-tab2" class="bg-gray-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 shadow-md">Previous</button>
+                <button id="next-btn-tab2" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 shadow-md">Start</button>
+            </div>
         </div>
     </div>
 
-<script>
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.getElementById('network-svg');
-    const explanationContainer = document.getElementById('explanation-container');
-    const nextButton = document.getElementById('next-btn');
-    const prevButton = document.getElementById('prev-btn');
+    <script>
+        // --- Tab 1: Decision Boundary Visualization ---
+        function initializeBoundaryTab() {
+            const data = [ { x: 1, y: 1, class: 1 }, { x: 2, y: 0.4, class: 0 }, { x: -2, y: 0, class: 1 } ];
+            const initialWeights = { w0: 2, w1: -1, w2: 1 };
+            const updatedWeights = { w0: 1.9, w1: -1.2, w2: 0.96 };
+            const svg = d3.select("#chart-tab1");
+            const width = 500, height = 500;
+            const margin = { top: 40, right: 20, bottom: 40, left: 40 };
+            const chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+            const xScale = d3.scaleLinear().domain([-3, 3]).range([0, chartWidth]);
+            const yScale = d3.scaleLinear().domain([-3, 3]).range([chartHeight, 0]);
+            chartGroup.append("g").attr("transform", `translate(0, ${chartHeight})`).call(d3.axisBottom(xScale));
+            chartGroup.append("g").call(d3.axisLeft(yScale));
+            svg.append("text").attr("text-anchor", "middle").attr("x", width/2).attr("y", height - 5).text("x1");
+            svg.append("text").attr("text-anchor", "middle").attr("transform", "rotate(-90)").attr("y", 15).attr("x", -height/2).text("x2");
+            svg.append("text").attr("x", width/2).attr("y", margin.top/2 + 5).attr("text-anchor", "middle").style("font-size", "16px").style("font-weight", "bold").text("Perceptron Decision Boundary");
 
-    // --- Network Structure ---
-    const inputs = [
-        { id: 'x1', cx: 50, cy: 80, class: 'input-node', label: 'x1' },
-        { id: 'x2', cx: 50, cy: 150, class: 'input-node', label: 'x2' },
-        { id: 'b', cx: 50, cy: 220, class: 'bias-node', label: 'bias (x0)' }
-    ];
-    const outputs = [
-        { id: 'y', cx: 300, cy: 150, class: 'output-node', label: 'y' }
-    ];
-
-    let elements = {};
-
-    function createText(x, y, content, className, id) {
-        const text = document.createElementNS(svgNS, 'text');
-        text.setAttribute('x', x);
-        text.setAttribute('y', y);
-        text.setAttribute('class', className);
-        if(id) text.id = id;
-        text.textContent = content;
-        return text;
-    }
-    
-    // Draw lines (weights)
-    inputs.forEach(input => {
-        outputs.forEach(output => {
-            const line = document.createElementNS(svgNS, 'line');
-            const lineId = `w-${input.id}-${output.id}`;
-            line.id = lineId;
-            line.setAttribute('x1', input.cx + 20);
-            line.setAttribute('y1', input.cy);
-            line.setAttribute('x2', output.cx - 20);
-            line.setAttribute('y2', output.cy);
-            line.setAttribute('class', 'line');
-            svg.appendChild(line);
-            elements[lineId] = line;
-
-            // Weight text
-            const wx = (input.cx + output.cx) / 2 - (input.id === 'x2' ? 40 : 20);
-            const wy = (input.cy + output.cy) / 2 + (input.id === 'x2' ? -15 : 0);
-            const weightTextId = `wt-${input.id}-${output.id}`;
-            const weightText = createText(wx, wy, '', 'weight-text', weightTextId);
-            svg.appendChild(weightText);
-            elements[weightTextId] = weightText;
-        });
-    });
-
-    // Draw nodes
-    [...inputs, ...outputs].forEach(nodeInfo => {
-        const group = document.createElementNS(svgNS, 'g');
-        
-        const circle = document.createElementNS(svgNS, 'circle');
-        circle.id = nodeInfo.id;
-        circle.setAttribute('cx', nodeInfo.cx);
-        circle.setAttribute('cy', nodeInfo.cy);
-        circle.setAttribute('r', 20);
-        circle.setAttribute('class', `node ${nodeInfo.class}`);
-        group.appendChild(circle);
-        elements[nodeInfo.id] = circle;
-
-        const label = createText(nodeInfo.cx, nodeInfo.cy, nodeInfo.label, 'node-text');
-        group.appendChild(label);
-        
-        const valueId = `val-${nodeInfo.id}`;
-        const valueText = createText(nodeInfo.cx, nodeInfo.cy + 30, '', 'value-text', valueId);
-        group.appendChild(valueText);
-        elements[valueId] = valueText;
-        
-        svg.appendChild(group);
-    });
-    
-    // --- State and Steps ---
-    let currentStep = -1;
-    const initialData = {
-        w: [2, -1, 1], // Corresponds to [w0 (bias), w1, w2]
-        eta: 0.1,
-        trainingData: [
-            { input: [1, 1, 1], desired: 1 },    // Instance 1
-            { input: [1, 2, 0.4], desired: 0 },  // Instance 2
-            { input: [1, -2, 0], desired: 1 }    // Instance 3
-        ]
-    };
-
-    let data = {};
-
-    function resetData() {
-        data = JSON.parse(JSON.stringify(initialData));
-    }
-
-    function clearHighlights() {
-        Object.values(elements).forEach(el => {
-            el.classList.remove('node-highlight', 'line-highlight', 'output-highlight');
-        });
-    }
-    
-    function updateWeightText(weights) {
-        elements['wt-b-y'].textContent = `w0=${weights[0].toFixed(2)}`;
-        elements['wt-x1-y'].textContent = `w1=${weights[1].toFixed(2)}`;
-        elements['wt-x2-y'].textContent = `w2=${weights[2].toFixed(2)}`;
-    }
-    
-    function setInputValues(inputVector) {
-        elements['val-b'].textContent = `in: ${inputVector[0]}`;
-        elements['val-x1'].textContent = `in: ${inputVector[1]}`;
-        elements['val-x2'].textContent = `in: ${inputVector[2]}`;
-    }
-
-    const steps = [
-        // --- INSTANCE 1 ---
-        {
-            title: "Instance 1: Start",
-            explanation: `
-                <p>We begin with the first training data point. The network has its initial weights.</p>
-                <p class="mt-4"><strong>Input x:</strong> [x0=1, x1=1, x2=1]</p>
-                <p><strong>Desired Output d:</strong> 1</p>`,
-            action: () => {
-                clearHighlights();
-                updateWeightText(data.w);
-                setInputValues(data.trainingData[0].input);
-                ['b', 'x1', 'x2'].forEach(id => elements[id].classList.add('node-highlight'));
-                elements['val-y'].textContent = '';
-            }
-        },
-        {
-            title: "Instance 1: Calculate Net Input",
-            explanation: `
-                <p>The net input is the weighted sum of the inputs: <br><strong>net = w0*x0 + w1*x1 + w2*x2</strong></p>
-                <p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">
-                    (2 * 1) + (-1 * 1) + (1 * 1) = <strong class="highlight-res">2</strong>
-                </p>`,
-            action: () => {
-                clearHighlights();
-                ['b', 'x1', 'x2'].forEach(id => {
-                    elements[id].classList.add('node-highlight');
-                    elements[`w-${id}-y`].classList.add('line-highlight');
+            const getLineCoords = (weights) => {
+                const [x1_start, x1_end] = xScale.domain();
+                const y1_start = (-weights.w0 - (weights.w1 * x1_start)) / weights.w2;
+                const y1_end = (-weights.w0 - (weights.w1 * x1_end)) / weights.w2;
+                return [{ x: xScale(x1_start), y: yScale(y1_start) }, { x: xScale(x1_end), y: yScale(y1_end) }];
+            };
+            const drawLine = (id, coords, color, strokeWidth = 2, isDashed = false) => {
+                let line = chartGroup.selectAll(`#${id}`).data([coords]);
+                line.enter().append("line").attr("id", id).attr("class", "decision-boundary")
+                    .merge(line).attr("x1", d=>d[0].x).attr("y1", d=>d[0].y).attr("x2", d=>d[1].x).attr("y2", d=>d[1].y)
+                    .attr("stroke", color).attr("stroke-width", strokeWidth).attr("stroke-dasharray", isDashed ? "5,5" : "none");
+            };
+            const explanationEl = document.getElementById('explanation-tab1'), step0Btn = document.getElementById('step0-tab1'),
+                  step1Btn = document.getElementById('step1-tab1'), step2Btn = document.getElementById('step2-tab1'), resetBtn = document.getElementById('reset-tab1');
+            
+            function clearChart() { chartGroup.selectAll(".data-point, .decision-boundary, .annotation, .anchor-point").remove(); }
+            function resetAll() {
+                clearChart();
+                step0Btn.classList.replace('bg-green-500', 'bg-blue-500'); step0Btn.classList.replace('hover:bg-green-600', 'hover:bg-blue-600');
+                [step1Btn, step2Btn].forEach(btn => {
+                   btn.disabled = true; btn.classList.add('cursor-not-allowed');
+                   btn.classList.replace('bg-blue-500', 'bg-gray-300'); btn.classList.replace('hover:bg-blue-600', 'hover:bg-gray-400');
                 });
-                elements['y'].classList.add('output-highlight');
-                elements['val-y'].textContent = 'net: 2';
+                explanationEl.innerHTML = `<h3 class="font-bold mb-2">Instructions</h3><p>Click the buttons to see the algorithm in action.</p>`;
             }
-        },
-        {
-            title: "Instance 1: Apply Activation",
-            explanation: `
-                <p>The activation function is a simple threshold: if net > 0, output is 1, else 0.</p>
-                <p class="mt-2"><strong>net = 2</strong>, which is > 0, so... </p>
-                <p><strong>Actual Output y:</strong> <strong class="highlight-res">1</strong></p>`,
-            action: () => {
-                 elements['val-y'].textContent = 'y: 1';
+            function runStep0(){
+                clearChart();
+                chartGroup.selectAll(".data-point").data(data).enter().append("circle").attr("class", "data-point")
+                    .attr("cx", d => xScale(d.x)).attr("cy", d => yScale(d.y)).attr("r", 7).style("fill", d => d.class === 1 ? "#3b82f6" : "#ef4444");
+                explanationEl.innerHTML = `<h3 class="font-bold mb-2">Step 1: Data Points</h3><p>We plot the training data. Blue points are Class 1, red are Class 0.</p>`;
+                step0Btn.classList.replace('bg-blue-500', 'bg-green-500'); step0Btn.classList.replace('hover:bg-blue-600', 'hover:bg-green-600');
+                step1Btn.disabled = false; step1Btn.classList.remove('cursor-not-allowed');
+                step1Btn.classList.replace('bg-gray-300', 'bg-blue-500'); step1Btn.classList.replace('hover:bg-gray-400', 'hover:bg-blue-600');
             }
-        },
-        {
-            title: "Instance 1: Calculate Error",
-            explanation: `
-                <p>Error is the difference between the desired and actual output: <strong>e = d - y</strong></p>
-                <p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">
-                    e = 1 - 1 = <strong class="highlight-res">0</strong>
-                </p>
-                <p class="mt-2">The error is 0, so the prediction was correct. <strong>No weight update is needed.</strong></p>`,
-            action: () => {
-                elements['val-y'].textContent = 'e: 0';
+            function runStep1(){
+                const initialCoords = getLineCoords(initialWeights);
+                drawLine("initial-line-tab1", initialCoords, "#f97316", 3);
+                explanationEl.innerHTML = `<h3 class="font-bold mb-2">Step 2: Initial Boundary</h3><p>The boundary for W=(2,-1,1) is drawn. This line visually separates the classes based on the initial weights.</p>`;
+                step1Btn.classList.replace('bg-blue-500', 'bg-green-500'); step1Btn.classList.replace('hover:bg-blue-600', 'hover:bg-green-600');
+                step2Btn.disabled = false; step2Btn.classList.remove('cursor-not-allowed');
+                step2Btn.classList.replace('bg-gray-300', 'bg-blue-500'); step2Btn.classList.replace('hover:bg-gray-400', 'hover:bg-blue-600');
             }
-        },
-        // --- INSTANCE 2 ---
-        {
-            title: "Instance 2: Start",
-            explanation: `
-                <p>Now we process the second training data point with the current weights.</p>
-                <p class="mt-4"><strong>Input x:</strong> [x0=1, x1=2, x2=0.4]</p>
-                <p><strong>Desired Output d:</strong> 0</p>`,
-            action: () => {
-                clearHighlights();
-                updateWeightText(data.w);
-                setInputValues(data.trainingData[1].input);
-                ['b', 'x1', 'x2'].forEach(id => elements[id].classList.add('node-highlight'));
-                elements['val-y'].textContent = '';
+            function runStep2(){
+                drawLine("initial-line-tab1", getLineCoords(initialWeights), "#f97316", 2, true);
+                drawLine("updated-line-tab1", getLineCoords(updatedWeights), "#16a34a", 3);
+                chartGroup.append('circle').attr('class', 'annotation').attr('cx', xScale(data[1].x)).attr('cy', yScale(data[1].y))
+                    .attr('r', 12).attr('fill', 'none').attr('stroke', '#facc15').attr('stroke-width', 3);
+                explanationEl.innerHTML = `<h3 class="font-bold mb-2">Step 3: Update Boundary</h3><p>Point P2 is misclassified. Weights are updated to W=(1.9,-1.2,0.96), and a new boundary is drawn.</p>`;
+                step2Btn.classList.replace('bg-blue-500', 'bg-green-500'); step2Btn.classList.replace('hover:bg-blue-600', 'hover:bg-green-600');
             }
-        },
-         {
-            title: "Instance 2: Calculate Net Input",
-            explanation: `
-                <p>We calculate the net input again with the new data.</p>
-                <p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">
-                    (2 * 1) + (-1 * 2) + (1 * 0.4) = <strong class="highlight-res">0.4</strong>
-                </p>`,
-            action: () => {
-                clearHighlights();
-                ['b', 'x1', 'x2'].forEach(id => {
-                    elements[id].classList.add('node-highlight');
-                    elements[`w-${id}-y`].classList.add('line-highlight');
-                });
-                elements['y'].classList.add('output-highlight');
-                elements['val-y'].textContent = 'net: 0.4';
-            }
-        },
-        {
-            title: "Instance 2: Apply Activation",
-            explanation: `
-                <p>The activation function is a simple threshold: if net > 0, output is 1, else 0.</p>
-                <p class="mt-2"><strong>net = 0.4</strong>, which is > 0, so... </p>
-                <p><strong>Actual Output y:</strong> <strong class="highlight-res">1</strong></p>`,
-            action: () => {
-                 elements['val-y'].textContent = 'y: 1';
-            }
-        },
-        {
-            title: "Instance 2: Calculate Error",
-            explanation: `
-                <p>Calculate the error: <strong>e = d - y</strong></p>
-                <p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">
-                    e = 0 - 1 = <strong class="highlight-op">-1</strong>
-                </p>
-                <p class="mt-2">The error is not 0. <strong>A weight update is required.</strong></p>`,
-            action: () => {
-                elements['val-y'].textContent = 'e: -1';
-            }
-        },
-        {
-            title: "Instance 2: Update Weights",
-            explanation: `
-                <p>We update weights using the formula: <br><strong>W_new = W_old + η * e * x</strong></p>
-                <p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">
-                   Δw = 0.1 * -1 * [1, 2, 0.4] <br>
-                   Δw = [-0.1, -0.2, -0.04]<br><br>
-                   W_new = [2, -1, 1] + [-0.1, -0.2, -0.04] <br>
-                   W_new = <strong class="highlight-res">[1.9, -1.2, 0.96]</strong>
-                </p>`,
-            action: () => {
-                const { input } = data.trainingData[1];
-                const net = data.w[0]*input[0] + data.w[1]*input[1] + data.w[2]*input[2];
-                const actual = net > 0 ? 1 : 0;
-                const error = data.trainingData[1].desired - actual;
-
-                if (error !== 0) {
-                    for(let i=0; i < data.w.length; i++) {
-                        const delta_w = data.eta * error * input[i];
-                        data.w[i] += delta_w;
-                    }
-                }
-                updateWeightText(data.w);
-                ['b', 'x1', 'x2'].forEach(id => {
-                    elements[`w-${id}-y`].classList.add('line-highlight');
-                });
-            }
-        },
-        // --- INSTANCE 3 ---
-         {
-            title: "Instance 3: Start",
-            explanation: `
-                <p>Finally, we process the third data point with the newly updated weights.</p>
-                <p class="mt-4"><strong>Input x:</strong> [x0=1, x1=-2, x2=0]</p>
-                <p><strong>Desired Output d:</strong> 1</p>`,
-            action: () => {
-                clearHighlights();
-                updateWeightText(data.w);
-                setInputValues(data.trainingData[2].input);
-                ['b', 'x1', 'x2'].forEach(id => elements[id].classList.add('node-highlight'));
-                elements['val-y'].textContent = '';
-            }
-        },
-        {
-            title: "Instance 3: Calculate Net Input",
-            explanation: `
-                <p>Calculate net input with the updated weights.</p>
-                <p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">
-                    (1.9 * 1) + (-1.2 * -2) + (0.96 * 0) = <strong class="highlight-res">4.3</strong>
-                </p>`,
-            action: () => {
-                clearHighlights();
-                ['b', 'x1', 'x2'].forEach(id => {
-                    elements[id].classList.add('node-highlight');
-                    elements[`w-${id}-y`].classList.add('line-highlight');
-                });
-                elements['y'].classList.add('output-highlight');
-                elements['val-y'].textContent = 'net: 4.3';
-            }
-        },
-        {
-            title: "Instance 3: Apply Activation",
-            explanation: `
-                <p>The activation function is a simple threshold: if net > 0, output is 1, else 0.</p>
-                <p class="mt-2"><strong>net = 4.3</strong>, which is > 0, so... </p>
-                <p><strong>Actual Output y:</strong> <strong class="highlight-res">1</strong></p>`,
-            action: () => {
-                 elements['val-y'].textContent = 'y: 1';
-            }
-        },
-         {
-            title: "Instance 3: Calculate Error",
-            explanation: `
-                <p>Calculate the final error: <strong>e = d - y</strong></p>
-                <p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">
-                    e = 1 - 1 = <strong class="highlight-res">0</strong>
-                </p>
-                <p class="mt-2">The error is 0. The network correctly classified this instance. <strong>No weight update is needed.</strong></p>`,
-            action: () => {
-                elements['val-y'].textContent = 'e: 0';
-            }
-        },
-        {
-            title: "Training Complete",
-            explanation: `<p>The perceptron has processed all training instances. The weights have been adjusted based on the errors. You can restart to see the process again.</p>`,
-            action: () => {
-                clearHighlights();
-                setInputValues(['', '', '']);
-                elements['val-y'].textContent = '';
-            }
-        }
-    ];
-
-    function updateButtonsState() {
-        prevButton.disabled = currentStep <= 0;
-        prevButton.classList.toggle('opacity-50', prevButton.disabled);
-        prevButton.classList.toggle('cursor-not-allowed', prevButton.disabled);
-
-        if (currentStep >= steps.length - 1) {
-            nextButton.innerText = 'Restart';
-        } else if (currentStep < 0) {
-            nextButton.innerText = 'Start';
-        } else {
-            nextButton.innerText = 'Next';
-        }
-    }
-
-    // This function is complex. It re-calculates the state from the beginning
-    // when you go backwards to ensure the weights are always correct for the current step.
-    function renderStep(stepIndex, isSteppingBack = false) {
-        if (stepIndex < 0 || stepIndex >= steps.length) {
-            return;
+            step0Btn.addEventListener('click', runStep0); step1Btn.addEventListener('click', runStep1);
+            step2Btn.addEventListener('click', runStep2); resetBtn.addEventListener('click', resetAll);
         }
 
-        const stepToRender = steps[stepIndex];
-        
-        // If we are stepping backwards, we need to reset and recalculate the state
-        // up to the point of the step we want to show.
-        if (isSteppingBack) {
-            resetData(); // Start from initial weights
-            // Silently run the 'action' of all steps leading up to the target step
-            for (let i = 0; i < stepIndex; i++) {
-                const silentStep = steps[i];
-                 // We only care about actions that update weights
-                if (silentStep.title.includes("Update Weights")) {
-                    silentStep.action();
+        // --- Tab 2: Network Visualization ---
+        function initializeNetworkTab() {
+            const svgNS = "http://www.w3.org/2000/svg", svg = document.getElementById('network-svg-tab2'),
+                  explanationContainer = document.getElementById('explanation-container-tab2'),
+                  nextButton = document.getElementById('next-btn-tab2'), prevButton = document.getElementById('prev-btn-tab2');
+            const inputs = [{id:'x1',cx:50,cy:80,class:'input-node',label:'x1'},{id:'x2',cx:50,cy:150,class:'input-node',label:'x2'},{id:'b',cx:50,cy:220,class:'bias-node',label:'bias(x0)'}];
+            const outputs = [{id:'y',cx:300,cy:150,class:'output-node',label:'y'}];
+            let elements = {};
+            function createText(x, y, c, cl, id) { const t=document.createElementNS(svgNS,'text'); t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('class',cl);if(id)t.id=id;t.textContent=c; return t; }
+            inputs.forEach(i=>{outputs.forEach(o=>{ const l=document.createElementNS(svgNS,'line'),lid=`w-${i.id}-${o.id}`; l.id=lid;l.setAttribute('x1',i.cx+20);l.setAttribute('y1',i.cy);l.setAttribute('x2',o.cx-20);l.setAttribute('y2',o.cy);l.setAttribute('class','line');svg.appendChild(l);elements[lid]=l; const wx=(i.cx+o.cx)/2-(i.id==='x2'?40:20),wy=(i.cy+o.cy)/2+(i.id==='x2'?-15:0),wtid=`wt-${i.id}-${o.id}`,wt=createText(wx,wy,'','weight-text',wtid);svg.appendChild(wt);elements[wtid]=wt; });});
+            [...inputs,...outputs].forEach(n=>{ const g=document.createElementNS(svgNS,'g'),c=document.createElementNS(svgNS,'circle');c.id=n.id;c.setAttribute('cx',n.cx);c.setAttribute('cy',n.cy);c.setAttribute('r',20);c.setAttribute('class',`node ${n.class}`);g.appendChild(c);elements[n.id]=c; const l=createText(n.cx,n.cy,n.label,'node-text');g.appendChild(l); const vid=`val-${n.id}`,vt=createText(n.cx,n.cy+30,'','value-text',vid);g.appendChild(vt);elements[vid]=vt; svg.appendChild(g); });
+            let currentStep=-1; const initialData={w:[2,-1,1],eta:0.1,trainingData:[{input:[1,1,1],desired:1},{input:[1,2,0.4],desired:0},{input:[1,-2,0],desired:1}]};
+            let data={}; function resetData(){data=JSON.parse(JSON.stringify(initialData));}
+            function clearHighlights(){Object.values(elements).forEach(el=>el.classList.remove('node-highlight','line-highlight','output-highlight'));}
+            function updateWeightText(w){elements['wt-b-y'].textContent=`w0=${w[0].toFixed(2)}`;elements['wt-x1-y'].textContent=`w1=${w[1].toFixed(2)}`;elements['wt-x2-y'].textContent=`w2=${w[2].toFixed(2)}`;}
+            function setInputValues(v){elements['val-b'].textContent=`in:${v[0]}`;elements['val-x1'].textContent=`in:${v[1]}`;elements['val-x2'].textContent=`in:${v[2]}`;}
+            const steps = [
+                { title: "Instance 1: Start", explanation: `<p>We begin with the first training data point.</p><p class="mt-4"><strong>Input x:</strong> [x0=1, x1=1, x2=1]</p><p><strong>Desired d:</strong> 1</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.trainingData[0].input); ['b','x1','x2'].forEach(id=>elements[id].classList.add('node-highlight')); elements['val-y'].textContent='';}},
+                { title: "Instance 1: Calculate Net Input", explanation: `<p>Net input is the weighted sum: <br><strong>net = w0*x0 + w1*x1 + w2*x2</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(2*1)+(-1*1)+(1*1)=<strong class="highlight-res">2</strong></p>`, action: () => { clearHighlights(); ['b','x1','x2'].forEach(id=>{elements[id].classList.add('node-highlight');elements[`w-${id}-y`].classList.add('line-highlight');}); elements['y'].classList.add('output-highlight'); elements['val-y'].textContent='net: 2'; }},
+                { title: "Instance 1: Apply Activation", explanation: `<p>Activation: if net > 0, output is 1, else 0.</p><p class="mt-2"><strong>net=2</strong>, which is > 0, so...</p><p><strong>Actual y:</strong><strong class="highlight-res">1</strong></p>`, action: () => { elements['val-y'].textContent='y: 1'; }},
+                { title: "Instance 1: Calculate Error", explanation: `<p>Error: <strong>e = d - y</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 1 - 1 = <strong class="highlight-res">0</strong></p><p class="mt-2">The error is 0. <strong>No weight update is needed.</strong></p>`, action: () => { elements['val-y'].textContent='e: 0'; }},
+                { title: "Instance 2: Start", explanation: `<p>Now the second training data point.</p><p class="mt-4"><strong>Input x:</strong> [x0=1, x1=2, x2=0.4]</p><p><strong>Desired d:</strong> 0</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.trainingData[1].input); ['b','x1','x2'].forEach(id=>elements[id].classList.add('node-highlight')); elements['val-y'].textContent=''; }},
+                { title: "Instance 2: Calculate Net Input", explanation: `<p>Calculate net input again.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(2*1)+(-1*2)+(1*0.4)=<strong class="highlight-res">0.4</strong></p>`, action: () => { clearHighlights(); ['b','x1','x2'].forEach(id=>{elements[id].classList.add('node-highlight');elements[`w-${id}-y`].classList.add('line-highlight');}); elements['y'].classList.add('output-highlight'); elements['val-y'].textContent='net: 0.4'; }},
+                { title: "Instance 2: Apply Activation", explanation: `<p>Activation: if net > 0, output is 1, else 0.</p><p class="mt-2"><strong>net=0.4</strong>, which is > 0, so...</p><p><strong>Actual y:</strong><strong class="highlight-res">1</strong></p>`, action: () => { elements['val-y'].textContent='y: 1'; }},
+                { title: "Instance 2: Calculate Error", explanation: `<p>Calculate the error: <strong>e = d - y</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 0 - 1 = <strong class="highlight-op">-1</strong></p><p class="mt-2">Error is not 0. <strong>Weight update required.</strong></p>`, action: () => { elements['val-y'].textContent='e: -1'; }},
+                { title: "Instance 2: Update Weights", explanation: `<p>Update weights: <strong>W_new=W_old+η*e*x</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw=0.1*-1*[1,2,0.4]=[-0.1,-0.2,-0.04]<br>W_new=[2,-1,1]+[-0.1,-0.2,-0.04]<br>W_new=<strong class="highlight-res">[1.9,-1.2,0.96]</strong></p>`, action: () => { const {input,desired}=data.trainingData[1],net=data.w[0]*input[0]+data.w[1]*input[1]+data.w[2]*input[2],actual=net>0?1:0,error=desired-actual; if(error!==0){for(let i=0;i<data.w.length;i++){const d_w=data.eta*error*input[i];data.w[i]+=d_w;}} updateWeightText(data.w); ['b','x1','x2'].forEach(id=>elements[`w-${id}-y`].classList.add('line-highlight')); }},
+                { title: "Instance 3: Start", explanation: `<p>Finally, the third data point with updated weights.</p><p class="mt-4"><strong>Input x:</strong> [x0=1, x1=-2, x2=0]</p><p><strong>Desired d:</strong> 1</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.trainingData[2].input); ['b','x1','x2'].forEach(id=>elements[id].classList.add('node-highlight')); elements['val-y'].textContent=''; }},
+                { title: "Instance 3: Calculate Net Input", explanation: `<p>Calculate net input with updated weights.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(1.9*1)+(-1.2*-2)+(0.96*0)=<strong class="highlight-res">4.3</strong></p>`, action: () => { clearHighlights(); ['b','x1','x2'].forEach(id=>{elements[id].classList.add('node-highlight');elements[`w-${id}-y`].classList.add('line-highlight');}); elements['y'].classList.add('output-highlight'); elements['val-y'].textContent='net: 4.3'; }},
+                { title: "Instance 3: Apply Activation", explanation: `<p>Activation: if net > 0, output is 1, else 0.</p><p class="mt-2"><strong>net=4.3</strong>, > 0, so... </p><p><strong>Actual y:</strong><strong class="highlight-res">1</strong></p>`, action: () => { elements['val-y'].textContent='y: 1'; }},
+                { title: "Instance 3: Calculate Error", explanation: `<p>Calculate final error: <strong>e = d - y</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 1 - 1 = <strong class="highlight-res">0</strong></p><p class="mt-2">Error is 0. Correctly classified. <strong>No weight update.</strong></p>`, action: () => { elements['val-y'].textContent='e: 0'; }},
+                { title: "Training Complete", explanation: `<p>All training instances processed. Restart to see it again.</p>`, action: () => { clearHighlights(); setInputValues(['','','']); elements['val-y'].textContent=''; }}
+            ];
+            function updateButtonsState() { prevButton.disabled = currentStep<=0; prevButton.classList.toggle('opacity-50',prevButton.disabled); prevButton.classList.toggle('cursor-not-allowed',prevButton.disabled); if(currentStep>=steps.length-1){nextButton.innerText='Restart';}else if(currentStep<0){nextButton.innerText='Start';}else{nextButton.innerText='Next';}}
+            function renderStep(stepIndex, isBack) {
+                if(stepIndex<0||stepIndex>=steps.length)return; const step=steps[stepIndex]; if(isBack){ resetData(); for(let i=0;i<stepIndex;i++){ const s=steps[i]; if(s.title.includes("Update Weights")){s.action();}}} currentStep=stepIndex; explanationContainer.innerHTML=`<div class="fade-in"><h2 class="text-xl font-bold text-blue-700 mb-4">${step.title}</h2><div>${step.explanation}</div></div>`; step.action(); updateButtonsState();
+            }
+            nextButton.addEventListener('click',()=>{let next=currentStep+1;if(next>=steps.length){resetData();next=0;}renderStep(next,false);});
+            prevButton.addEventListener('click',()=>{let prev=currentStep-1;if(prev>=0){renderStep(prev,true);}});
+            function initialize(){ currentStep=-1; resetData(); explanationContainer.innerHTML=`<h2 class="text-xl font-bold text-blue-700 mb-4">Welcome!</h2><p>This is an interactive visualization of a single Perceptron learning.</p><p class="mt-2">Click "Start" to walk through the training process.</p>`; updateWeightText(data.w); clearHighlights(); setInputValues(['','','']); elements['val-y'].textContent=''; updateButtonsState(); }
+            initialize();
+        }
+
+        // --- Main Tab Switching Logic ---
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabBtn1 = document.getElementById('tabBtn1'), tabBtn2 = document.getElementById('tabBtn2');
+            const tabContent1 = document.getElementById('tabContent1'), tabContent2 = document.getElementById('tabContent2');
+            let isTab1Initialized = false, isTab2Initialized = false;
+
+            function showTab1() {
+                tabContent1.classList.remove('hidden'); tabContent2.classList.add('hidden');
+                tabBtn1.classList.add('active'); tabBtn2.classList.remove('active');
+                if (!isTab1Initialized) {
+                    initializeBoundaryTab();
+                    isTab1Initialized = true;
                 }
             }
-        }
-        
-        currentStep = stepIndex;
-        
-        explanationContainer.innerHTML = `
-            <div class="fade-in">
-                <h2 class="text-xl font-bold text-blue-700 mb-4">${stepToRender.title}</h2>
-                <div>${stepToRender.explanation}</div>
-            </div>`;
-
-        // Always run the action of the final step to update the UI
-        stepToRender.action();
-
-        updateButtonsState();
-    }
-    
-    nextButton.addEventListener('click', () => {
-        let nextStepIndex = currentStep + 1;
-        if (nextStepIndex >= steps.length) {
-            resetData();
-            nextStepIndex = 0; // Restart
-        }
-        renderStep(nextStepIndex, false);
-    });
-
-    prevButton.addEventListener('click', () => {
-        let prevStepIndex = currentStep - 1;
-        if (prevStepIndex >= 0) {
-            renderStep(prevStepIndex, true);
-        }
-    });
-
-    function initialize() {
-        currentStep = -1;
-        resetData();
-        explanationContainer.innerHTML = `
-            <h2 class="text-xl font-bold text-blue-700 mb-4">Welcome!</h2>
-            <p>This is an interactive visualization of a single Perceptron learning.</p>
-            <p class="mt-2">The diagram shows the network structure: two inputs (x1, x2), a bias input (x0), and one output neuron.</p>
-            <p class="mt-4">Click the "Start" button to walk through the training process for three data points, step-by-step.</p>
-        `;
-        updateWeightText(data.w);
-        clearHighlights();
-        setInputValues(['', '', '']);
-        elements['val-y'].textContent = '';
-        updateButtonsState();
-    }
-    
-    initialize();
-
-</script>
+            function showTab2() {
+                tabContent1.classList.add('hidden'); tabContent2.classList.remove('hidden');
+                tabBtn1.classList.remove('active'); tabBtn2.classList.add('active');
+                if (!isTab2Initialized) {
+                    initializeNetworkTab();
+                    isTab2Initialized = true;
+                }
+            }
+            tabBtn1.addEventListener('click', showTab1);
+            tabBtn2.addEventListener('click', showTab2);
+            showTab1(); // Initialize the first tab on page load
+        });
+    </script>
 </body>
-
 </html>
+
