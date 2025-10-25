@@ -34,22 +34,62 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .highlight-op { color: #ef4444; }
         .highlight-res { color: #22c55e; }
+        
+        /* Styles for Tab 5 & 6 */
+        .logic-gate-btn.active {
+            background-color: #3b82f6; /* blue-500 */
+            color: white;
+        }
+        .point-correct {
+            fill: #22c55e; /* green-500 */
+        }
+        .point-incorrect {
+            fill: #ef4444; /* red-500 */
+        }
+        /* Styles for Tab 6 */
+        .solution-region {
+            fill: #16a34a; /* green-600 */
+            opacity: 0.2;
+        }
+        .constraint-line {
+            stroke: #52525b; /* true-gray-600 */
+            stroke-width: 1.5;
+            stroke-dasharray: 4, 4;
+        }
+        .weight-point {
+            fill: #f97316; /* orange-500 */
+            stroke: #ffffff;
+            stroke-width: 2;
+            cursor: move;
+        }
+        .weight-point.correct {
+            fill: #22c55e; /* green-500 */
+        }
     </style>
 </head>
 <body class="bg-gray-100 flex flex-col items-center min-h-screen p-4">
 
-    <div class="w-full max-w-6xl bg-white rounded-xl shadow-lg p-6 md:p-8">
+    <div class="w-full max-w-7xl bg-white rounded-xl shadow-lg p-6 md:p-8">
         <!-- Tab Navigation -->
         <div class="border-b border-gray-200 mb-6">
-            <nav class="-mb-px flex space-x-6" aria-label="Tabs">
-                <button id="tabBtn1" class="tab-button active whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+            <nav class="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
+                <button id="tabBtn1" class="tab-button active shrink-0 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                     Decision Boundary View
                 </button>
-                <button id="tabBtn2" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                <button id="tabBtn2" class="tab-button shrink-0 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
                     Simple Network View
                 </button>
-                <button id="tabBtn3" class="tab-button whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                <button id="tabBtn3" class="tab-button shrink-0 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
                     Complex Network View
+                </button>
+                <button id="tabBtn4" class="tab-button shrink-0 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Delta Rule (Exercise 2.3)
+                </button>
+                <button id="tabBtn5" class="tab-button shrink-0 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Interactive AND/OR
+                </button>
+                <button id="tabBtn6" class="tab-button shrink-0 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">
+                    Input vs. Weight Space
                 </button>
             </nav>
         </div>
@@ -95,7 +135,7 @@
         </div>
         
         <div id="tabContent3" class="tab-content hidden">
-            <!-- Content from new complex visualization -->
+            <!-- Content from complex visualization -->
             <h1 class="text-3xl font-bold text-center text-gray-900 mb-2">Perceptron Training: Complex Network View</h1>
             <p class="text-center text-gray-500 mb-6">Visualizing the flow of data and weight updates in a multi-output network.</p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -109,6 +149,117 @@
                 <button id="next-btn-tab3" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 shadow-md">Start</button>
             </div>
         </div>
+
+        <div id="tabContent4" class="tab-content hidden">
+            <!-- Content from new Delta Rule exercise -->
+            <h1 class="text-3xl font-bold text-center text-gray-900 mb-2">Delta Rule Training (Exercise 2.3)</h1>
+            <p class="text-center text-gray-500 mb-6">Visualizing the Delta Rule with a unipolar (sigmoid) activation function.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div id="network-container-tab4" class="w-full">
+                    <svg id="network-svg-tab4" viewBox="0 0 400 300"></svg>
+                </div>
+                <div id="explanation-container-tab4" class="bg-gray-50 p-6 rounded-lg h-full min-h-[300px]"></div>
+            </div>
+            <div class="mt-8 flex justify-center gap-4">
+                <button id="prev-btn-tab4" class="bg-gray-500 text-white font-bold py-2 px-6 rounded-lg hover:bg-gray-600 shadow-md">Previous</button>
+                <button id="next-btn-tab4" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 shadow-md">Start</button>
+            </div>
+        </div>
+
+        <div id="tabContent5" class="tab-content hidden">
+            <!-- Content for AND/OR Gate visualization -->
+            <h1 class="text-3xl font-bold text-center text-gray-900 mb-2">Interactive Perceptron: AND / OR Gates</h1>
+            <p class="text-center text-gray-500 mb-6">Find the weights that correctly separate the AND and OR logic gates.</p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Controls -->
+                <div>
+                    <div class="mb-4">
+                        <span class="font-medium text-gray-700">1. Select Logic Gate:</span>
+                        <div class="flex gap-2 mt-2">
+                            <button id="gate-and-btn" class="logic-gate-btn active w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">AND</button>
+                            <button id="gate-or-btn" class="logic-gate-btn w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">OR</button>
+                        </div>
+                    </div>
+                    <div class="mb-4 p-4 border rounded-lg bg-gray-50">
+                        <h3 class="font-medium text-lg text-center mb-2">Network Diagram</h3>
+                        <svg id="network-svg-tab5" viewBox="0 0 300 200" class="w-full h-auto">
+                            <circle cx="50" cy="50" r="15" class="input-node"></circle><text x="50" y="50" class="node-text">x1</text><text x="20" y="50" class="value-text" dominant-baseline="middle">u1</text>
+                            <circle cx="50" cy="100" r="15" class="input-node"></circle><text x="50" y="100" class="node-text">x2</text><text x="20" y="100" class="value-text" dominant-baseline="middle">u2</text>
+                            <circle cx="50" cy="150" r="15" class="bias-node"></circle><text x="50" y="150" class="node-text">xb</text><text x="50" y="175" class="value-text" text-anchor="middle">(-1)</text><text x="20" y="150" class="value-text" dominant-baseline="middle">ub</text>
+                            <circle cx="250" cy="100" r="20" class="output-node"></circle><text x="250" y="100" class="node-text">y</text><text x="250" y="85" class="value-text" text-anchor="middle" font-size="10px">Σ</text><text x="278" y="100" class="value-text" dominant-baseline="middle">u3</text>
+                            <line x1="65" y1="50" x2="230" y2="100" class="line"></line><text id="w1-text-tab5" x="140" y="70" class="weight-text">w1=1.0</text>
+                            <line x1="65" y1="100" x2="230" y2="100" class="line"></line><text id="w2-text-tab5" x="140" y="110" class="weight-text">w2=1.0</text>
+                            <line x1="65" y1="150" x2="230" y2="100" class="line"></line><text id="wb-text-tab5" x="140" y="130" class="weight-text">wb=1.0</text>
+                        </svg>
+                    </div>
+                    <div class="mb-4">
+                        <span class="font-medium text-gray-700">2. Set Weights:</span>
+                        <div class="grid grid-cols-3 gap-2 mt-2">
+                            <div><label for="w1-input" class="block text-sm font-medium text-gray-600">w1 (w31)</label><input type="number" id="w1-input" value="1.0" step="0.05" class="w-full p-2 border rounded-lg"></div>
+                            <div><label for="w2-input" class="block text-sm font-medium text-gray-600">w2 (w32)</label><input type="number" id="w2-input" value="1.0" step="0.05" class="w-full p-2 border rounded-lg"></div>
+                            <div><label for="wb-input" class="block text-sm font-medium text-gray-600">wb (w3b)</label><input type="number" id="wb-input" value="1.5" step="0.05" class="w-full p-2 border rounded-lg"></div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Note: Bias input `xb` is fixed at -1. `wb` is the bias weight.</p>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-700">3. Decision Boundary Equation:</h3>
+                        <p class="text-sm text-gray-600 bg-gray-100 p-2 rounded-lg font-mono" id="equation-text">(1.0 * x1) + (1.0 * x2) + (1.5 * -1) = 0</p>
+                    </div>
+                </div>
+                <!-- Visualization -->
+                <div class="w-full border rounded-lg p-4 bg-gray-50">
+                    <svg id="chart-tab5" class="w-full h-auto" viewbox="0 0 500 500"></svg>
+                </div>
+            </div>
+        </div>
+
+        <div id="tabContent6" class="tab-content hidden">
+            <!-- Content for new Input vs Weight Space visualization -->
+            <h1 class="text-3xl font-bold text-center text-gray-900 mb-2">Input Space vs. Weight Space</h1>
+            <p class="text-center text-gray-500 mb-6">Drag the <span class="font-bold text-orange-500">orange weight point</span> in the Weight Space to move the <span class="font-bold text-orange-500">boundary line</span> in the Input Space.</p>
+            
+            <div class="mb-4">
+                <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <div>
+                        <span class="font-medium text-gray-700">1. Select Logic Gate:</span>
+                        <div class="flex gap-2 mt-1">
+                            <button id="gate-and-btn-tab6" class="logic-gate-btn active w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">AND</button>
+                            <button id="gate-or-btn-tab6" class="logic-gate-btn w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">OR</button>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-700">2. Set Weights:</span>
+                        <div class="grid grid-cols-3 gap-2 mt-1">
+                            <div>
+                                <label for="w1-input-tab6" class="block text-sm font-medium text-gray-600">w1</label>
+                                <input type="number" id="w1-input-tab6" value="1.0" step="0.05" class="w-full p-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label for="w2-input-tab6" class="block text-sm font-medium text-gray-600">w2</label>
+                                <input type="number" id="w2-input-tab6" value="1.0" step="0.05" class="w-full p-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label for="wb-input-tab6" class="block text-sm font-medium text-gray-600">wb (bias)</label>
+                                <input type="number" id="wb-input-tab6" value="1.5" step="0.05" class="w-full p-2 border rounded-lg">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Input Space Chart -->
+                <div class="w-full border rounded-lg p-4 bg-gray-50">
+                    <svg id="chart-input-space" class="w-full h-auto" viewbox="0 0 500 500"></svg>
+                </div>
+                <!-- Weight Space Chart -->
+                <div class="w-full border rounded-lg p-4 bg-gray-50">
+                    <svg id="chart-weight-space" class="w-full h-auto" viewbox="0 0 500 500"></svg>
+                </div>
+            </div>
+        </div>
+
+
     </div>
 
     <script>
@@ -143,79 +294,457 @@
 
         // --- Tab 2: Simple Network Visualization ---
         function initializeNetworkTab() {
-            const svgNS = "http://www.w3.org/2000/svg", svg = document.getElementById('network-svg-tab2'), explanationContainer = document.getElementById('explanation-container-tab2'), nextButton = document.getElementById('next-btn-tab2'), prevButton = document.getElementById('prev-btn-tab2'); const inputs = [{id:'x1',cx:50,cy:80,class:'input-node',label:'x1'},{id:'x2',cx:50,cy:150,class:'input-node',label:'x2'},{id:'b',cx:50,cy:220,class:'bias-node',label:'bias(x0)'}]; const outputs = [{id:'y',cx:300,cy:150,class:'output-node',label:'y'}]; let elements = {}; function createText(x, y, c, cl, id) { const t=document.createElementNS(svgNS,'text'); t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('class',cl);if(id)t.id=id;t.textContent=c; return t; } inputs.forEach(i=>{outputs.forEach(o=>{ const l=document.createElementNS(svgNS,'line'),lid=`w-${i.id}-${o.id}`; l.id=lid;l.setAttribute('x1',i.cx+20);l.setAttribute('y1',i.cy);l.setAttribute('x2',o.cx-20);l.setAttribute('y2',o.cy);l.setAttribute('class','line');svg.appendChild(l);elements[lid]=l; const wx=(i.cx+o.cx)/2-(i.id==='x2'?40:20),wy=(i.cy+o.cy)/2+(i.id==='x2'?-15:0),wtid=`wt-${i.id}-${o.id}`,wt=createText(wx,wy,'','weight-text',wtid);svg.appendChild(wt);elements[wtid]=wt; });}); [...inputs,...outputs].forEach(n=>{ const g=document.createElementNS(svgNS,'g'),c=document.createElementNS(svgNS,'circle');c.id=n.id;c.setAttribute('cx',n.cx);c.setAttribute('cy',n.cy);c.setAttribute('r',20);c.setAttribute('class',`node ${n.class}`);g.appendChild(c);elements[n.id]=c; const l=createText(n.cx,n.cy,n.label,'node-text');g.appendChild(l); const vid=`val-${n.id}`,vt=createText(n.cx,n.cy+30,'','value-text',vid);g.appendChild(vt);elements[vid]=vt; svg.appendChild(g); }); let currentStep=-1; const initialData={w:[2,-1,1],eta:0.1,trainingData:[{input:[1,1,1],desired:1},{input:[1,2,0.4],desired:0},{input:[1,-2,0],desired:1}]}; let data={}; function resetData(){data=JSON.parse(JSON.stringify(initialData));} function clearHighlights(){Object.values(elements).forEach(el=>el.classList.remove('node-highlight','line-highlight','output-highlight'));} function updateWeightText(w){elements['wt-b-y'].textContent=`w0=${w[0].toFixed(2)}`;elements['wt-x1-y'].textContent=`w1=${w[1].toFixed(2)}`;elements['wt-x2-y'].textContent=`w2=${w[2].toFixed(2)}`;} function setInputValues(v){elements['val-b'].textContent=`in:${v[0]}`;elements['val-x1'].textContent=`in:${v[1]}`;elements['val-x2'].textContent=`in:${v[2]}`;} const steps = [ { title: "Instance 1: Start", explanation: `<p>We begin with the first training data point.</p><p class="mt-4"><strong>Input x:</strong> [x0=1, x1=1, x2=1]</p><p><strong>Desired d:</strong> 1</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.trainingData[0].input); ['b','x1','x2'].forEach(id=>elements[id].classList.add('node-highlight')); elements['val-y'].textContent='';}}, { title: "Instance 1: Calculate Net Input", explanation: `<p>Net input is the weighted sum: <br><strong>net = w0*x0 + w1*x1 + w2*x2</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(2*1)+(-1*1)+(1*1)=<strong class="highlight-res">2</strong></p>`, action: () => { clearHighlights(); ['b','x1','x2'].forEach(id=>{elements[id].classList.add('node-highlight');elements[`w-${id}-y`].classList.add('line-highlight');}); elements['y'].classList.add('output-highlight'); elements['val-y'].textContent='net: 2'; }}, { title: "Instance 1: Apply Activation", explanation: `<p>Activation: if net > 0, output is 1, else 0.</p><p class="mt-2"><strong>net=2</strong>, which is > 0, so...</p><p><strong>Actual y:</strong><strong class="highlight-res">1</strong></p>`, action: () => { elements['val-y'].textContent='y: 1'; }}, { title: "Instance 1: Calculate Error", explanation: `<p>Error: <strong>e = d - y</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 1 - 1 = <strong class="highlight-res">0</strong></p><p class="mt-2">The error is 0. <strong>No weight update is needed.</strong></p>`, action: () => { elements['val-y'].textContent='e: 0'; }}, { title: "Instance 2: Start", explanation: `<p>Now the second training data point.</p><p class="mt-4"><strong>Input x:</strong> [x0=1, x1=2, x2=0.4]</p><p><strong>Desired d:</strong> 0</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.trainingData[1].input); ['b','x1','x2'].forEach(id=>elements[id].classList.add('node-highlight')); elements['val-y'].textContent=''; }}, { title: "Instance 2: Calculate Net Input", explanation: `<p>Calculate net input again.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(2*1)+(-1*2)+(1*0.4)=<strong class="highlight-res">0.4</strong></p>`, action: () => { clearHighlights(); ['b','x1','x2'].forEach(id=>{elements[id].classList.add('node-highlight');elements[`w-${id}-y`].classList.add('line-highlight');}); elements['y'].classList.add('output-highlight'); elements['val-y'].textContent='net: 0.4'; }}, { title: "Instance 2: Apply Activation", explanation: `<p>Activation: if net > 0, output is 1, else 0.</p><p class="mt-2"><strong>net=0.4</strong>, which is > 0, so...</p><p><strong>Actual y:</strong><strong class="highlight-res">1</strong></p>`, action: () => { elements['val-y'].textContent='y: 1'; }}, { title: "Instance 2: Calculate Error", explanation: `<p>Calculate the error: <strong>e = d - y</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 0 - 1 = <strong class="highlight-op">-1</strong></p><p class="mt-2">Error is not 0. <strong>Weight update required.</strong></p>`, action: () => { elements['val-y'].textContent='e: -1'; }}, { title: "Instance 2: Update Weights", explanation: `<p>Update weights: <strong>W_new=W_old+η*e*x</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw=0.1*-1*[1,2,0.4]=[-0.1,-0.2,-0.04]<br>W_new=[2,-1,1]+[-0.1,-0.2,-0.04]<br>W_new=<strong class="highlight-res">[1.9,-1.2,0.96]</strong></p>`, action: () => { const {input,desired}=data.trainingData[1],net=data.w[0]*input[0]+data.w[1]*input[1]+data.w[2]*input[2],actual=net>0?1:0,error=desired-actual; if(error!==0){for(let i=0;i<data.w.length;i++){const d_w=data.eta*error*input[i];data.w[i]+=d_w;}} updateWeightText(data.w); ['b','x1','x2'].forEach(id=>elements[`w-${id}-y`].classList.add('line-highlight')); }}, { title: "Instance 3: Start", explanation: `<p>Finally, the third data point with updated weights.</p><p class="mt-4"><strong>Input x:</strong> [x0=1, x1=-2, x2=0]</p><p><strong>Desired d:</strong> 1</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.trainingData[2].input); ['b','x1','x2'].forEach(id=>elements[id].classList.add('node-highlight')); elements['val-y'].textContent=''; }}, { title: "Instance 3: Calculate Net Input", explanation: `<p>Calculate net input with updated weights.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(1.9*1)+(-1.2*-2)+(0.96*0)=<strong class="highlight-res">4.3</strong></p>`, action: () => { clearHighlights(); ['b','x1','x2'].forEach(id=>{elements[id].classList.add('node-highlight');elements[`w-${id}-y`].classList.add('line-highlight');}); elements['y'].classList.add('output-highlight'); elements['val-y'].textContent='net: 4.3'; }}, { title: "Instance 3: Apply Activation", explanation: `<p>Activation: if net > 0, output is 1, else 0.</p><p class="mt-2"><strong>net=4.3</strong>, > 0, so... </p><p><strong>Actual y:</strong><strong class="highlight-res">1</strong></p>`, action: () => { elements['val-y'].textContent='y: 1'; }}, { title: "Instance 3: Calculate Error", explanation: `<p>Calculate final error: <strong>e = d - y</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 1 - 1 = <strong class="highlight-res">0</strong></p><p class="mt-2">Error is 0. Correctly classified. <strong>No weight update.</strong></p>`, action: () => { elements['val-y'].textContent='e: 0'; }}, { title: "Training Complete", explanation: `<p>All training instances processed. Restart to see it again.</p>`, action: () => { clearHighlights(); setInputValues(['','','']); elements['val-y'].textContent=''; }} ]; function updateButtonsState() { prevButton.disabled = currentStep<=0; prevButton.classList.toggle('opacity-50',prevButton.disabled); prevButton.classList.toggle('cursor-not-allowed',prevButton.disabled); if(currentStep>=steps.length-1){nextButton.innerText='Restart';}else if(currentStep<0){nextButton.innerText='Start';}else{nextButton.innerText='Next';}} function renderStep(stepIndex, isBack) { if(stepIndex<0||stepIndex>=steps.length)return; const step=steps[stepIndex]; if(isBack){ resetData(); for(let i=0;i<stepIndex;i++){ const s=steps[i]; if(s.title.includes("Update Weights")){s.action();}}} currentStep=stepIndex; explanationContainer.innerHTML=`<div class="fade-in"><h2 class="text-xl font-bold text-blue-700 mb-4">${step.title}</h2><div>${step.explanation}</div></div>`; step.action(); updateButtonsState(); } nextButton.addEventListener('click',()=>{let next=currentStep+1;if(next>=steps.length){resetData();next=0;}renderStep(next,false);}); prevButton.addEventListener('click',()=>{let prev=currentStep-1;if(prev>=0){renderStep(prev,true);}}); function initialize(){ currentStep=-1; resetData(); explanationContainer.innerHTML=`<h2 class="text-xl font-bold text-blue-700 mb-4">Welcome!</h2><p>This is an interactive visualization of a single Perceptron learning.</p><p class="mt-2">Click "Start" to walk through the training process.</p>`; updateWeightText(data.w); clearHighlights(); setInputValues(['','','']); elements['val-y'].textContent=''; updateButtonsState(); } initialize();
+            const svgNS = "http://www.w3.org/2000/svg", svg = document.getElementById('network-svg-tab2'), explanationContainer = document.getElementById('explanation-container-tab2'), nextButton = document.getElementById('next-btn-tab2'), prevButton = document.getElementById('prev-btn-tab2'); const inputs = [{id:'x1',cx:50,cy:80,class:'input-node',label:'x1'},{id:'x2',cx:50,cy:150,class:'input-node',label:'x2'},{id:'b',cx:50,cy:220,class:'bias-node',label:'bias(x0)'}]; const outputs = [{id:'y',cx:300,cy:150,class:'output-node',label:'y'}]; let elements = {}; function createText(x, y, c, cl, id) { const t=document.createElementNS(svgNS,'text'); t.setAttribute('x',x);t.setAttribute('y',y);t.setAttribute('class',cl);if(id)t.id=id;t.textContent=c; return t; } inputs.forEach(i=>{outputs.forEach(o=>{ const l=document.createElementNS(svgNS,'line'),lid=`w-${i.id}-${o.id}-tab2`; l.id=lid;l.setAttribute('x1',i.cx+20);l.setAttribute('y1',i.cy);l.setAttribute('x2',o.cx-20);l.setAttribute('y2',o.cy);l.setAttribute('class','line');svg.appendChild(l);elements[lid]=l; const wx=(i.cx+o.cx)/2-(i.id==='x2'?40:20),wy=(i.cy+o.cy)/2+(i.id==='x2'?-15:0),wtid=`wt-${i.id}-${o.id}-tab2`,wt=createText(wx,wy,'','weight-text',wtid);svg.appendChild(wt);elements[wtid]=wt; });}); [...inputs,...outputs].forEach(n=>{ const g=document.createElementNS(svgNS,'g'),c=document.createElementNS(svgNS,'circle');c.id=`${n.id}-tab2`;c.setAttribute('cx',n.cx);c.setAttribute('cy',n.cy);c.setAttribute('r',20);c.setAttribute('class',`node ${n.class}`);g.appendChild(c);elements[c.id]=c; const l=createText(n.cx,n.cy,n.label,'node-text');g.appendChild(l); const vid=`val-${n.id}-tab2`,vt=createText(n.cx,n.cy+30,'','value-text',vid);g.appendChild(vt);elements[vid]=vt; svg.appendChild(g); }); let currentStep=-1; const initialData={w:[2,-1,1],eta:0.1,trainingData:[{input:[1,1,1],desired:1},{input:[1,2,0.4],desired:0},{input:[1,-2,0],desired:1}]}; let data={}; function resetData(){data=JSON.parse(JSON.stringify(initialData));} function clearHighlights(){Object.values(elements).forEach(el=>el.classList.remove('node-highlight','line-highlight','output-highlight'));} function updateWeightText(w){elements['wt-b-y-tab2'].textContent=`w0=${w[0].toFixed(2)}`;elements['wt-x1-y-tab2'].textContent=`w1=${w[1].toFixed(2)}`;elements['wt-x2-y-tab2'].textContent=`w2=${w[2].toFixed(2)}`;} function setInputValues(v){elements['val-b-tab2'].textContent=`in:${v[0]}`;elements['val-x1-tab2'].textContent=`in:${v[1]}`;elements['val-x2-tab2'].textContent=`in:${v[2]}`;} const steps = [ { title: "Instance 1: Start", explanation: `<p>We begin with the first training data point.</p><p class="mt-4"><strong>Input x:</strong> [x0=1, x1=1, x2=1]</p><p><strong>Desired d:</strong> 1</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.trainingData[0].input); ['b-tab2','x1-tab2','x2-tab2'].forEach(id=>elements[id].classList.add('node-highlight')); elements['val-y-tab2'].textContent='';}}, { title: "Instance 1: Calculate Net Input", explanation: `<p>Net input is the weighted sum: <br><strong>net = w0*x0 + w1*x1 + w2*x2</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(2*1)+(-1*1)+(1*1)=<strong class="highlight-res">2</strong></p>`, action: () => { clearHighlights(); ['b','x1','x2'].forEach(id=>{elements[`${id}-tab2`].classList.add('node-highlight');elements[`w-${id}-y-tab2`].classList.add('line-highlight');}); elements['y-tab2'].classList.add('output-highlight'); elements['val-y-tab2'].textContent='net: 2'; }}, { title: "Instance 1: Apply Activation", explanation: `<p>Activation: if net > 0, output is 1, else 0.</p><p class="mt-2"><strong>net=2</strong>, which is > 0, so...</p><p><strong>Actual y:</strong><strong class="highlight-res">1</strong></p>`, action: () => { elements['val-y-tab2'].textContent='y: 1'; }}, { title: "Instance 1: Calculate Error", explanation: `<p>Error: <strong>e = d - y</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 1 - 1 = <strong class="highlight-res">0</strong></p><p class="mt-2">The error is 0. <strong>No weight update is needed.</strong></p>`, action: () => { elements['val-y-tab2'].textContent='e: 0'; }}, { title: "Instance 2: Start", explanation: `<p>Now the second training data point.</p><p class="mt-4"><strong>Input x:</strong> [x0=1, x1=2, x2=0.4]</p><p><strong>Desired d:</strong> 0</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.trainingData[1].input); ['b-tab2','x1-tab2','x2-tab2'].forEach(id=>elements[id].classList.add('node-highlight')); elements['val-y-tab2'].textContent=''; }}, { title: "Instance 2: Calculate Net Input", explanation: `<p>Calculate net input again.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(2*1)+(-1*2)+(1*0.4)=<strong class="highlight-res">0.4</strong></p>`, action: () => { clearHighlights(); ['b','x1','x2'].forEach(id=>{elements[`${id}-tab2`].classList.add('node-highlight');elements[`w-${id}-y-tab2`].classList.add('line-highlight');}); elements['y-tab2'].classList.add('output-highlight'); elements['val-y-tab2'].textContent='net: 0.4'; }}, { title: "Instance 2: Apply Activation", explanation: `<p>Activation: if net > 0, output is 1, else 0.</p><p class="mt-2"><strong>net=0.4</strong>, which is > 0, so...</p><p><strong>Actual y:</strong><strong class="highlight-res">1</strong></p>`, action: () => { elements['val-y-tab2'].textContent='y: 1'; }}, { title: "Instance 2: Calculate Error", explanation: `<p>Calculate the error: <strong>e = d - y</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 0 - 1 = <strong class="highlight-op">-1</strong></p><p class="mt-2">Error is not 0. <strong>Weight update required.</strong></p>`, action: () => { elements['val-y-tab2'].textContent='e: -1'; }}, { title: "Instance 2: Update Weights", explanation: `<p>Update weights: <strong>W_new=W_old+η*e*x</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw=0.1*-1*[1,2,0.4]=[-0.1,-0.2,-0.04]<br>W_new=[2,-1,1]+[-0.1,-0.2,-0.04]<br>W_new=<strong class="highlight-res">[1.9,-1.2,0.96]</strong></p>`, action: () => { const {input,desired}=data.trainingData[1],net=data.w[0]*input[0]+data.w[1]*input[1]+data.w[2]*input[2],actual=net>0?1:0,error=desired-actual; if(error!==0){for(let i=0;i<data.w.length;i++){const d_w=data.eta*error*input[i];data.w[i]+=d_w;}} updateWeightText(data.w); ['b','x1','x2'].forEach(id=>elements[`w-${id}-y-tab2`].classList.add('line-highlight')); }}, { title: "Instance 3: Start", explanation: `<p>Finally, the third data point with updated weights.</p><p class="mt-4"><strong>Input x:</strong> [x0=1, x1=-2, x2=0]</p><p><strong>Desired d:</strong> 1</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.trainingData[2].input); ['b-tab2','x1-tab2','x2-tab2'].forEach(id=>elements[id].classList.add('node-highlight')); elements['val-y-tab2'].textContent=''; }}, { title: "Instance 3: Calculate Net Input", explanation: `<p>Calculate net input with updated weights.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(1.9*1)+(-1.2*-2)+(0.96*0)=<strong class="highlight-res">4.3</strong></p>`, action: () => { clearHighlights(); ['b','x1','x2'].forEach(id=>{elements[`${id}-tab2`].classList.add('node-highlight');elements[`w-${id}-y-tab2`].classList.add('line-highlight');}); elements['y-tab2'].classList.add('output-highlight'); elements['val-y-tab2'].textContent='net: 4.3'; }}, { title: "Instance 3: Apply Activation", explanation: `<p>Activation: if net > 0, output is 1, else 0.</p><p class="mt-2"><strong>net=4.3</strong>, > 0, so... </p><p><strong>Actual y:</strong><strong class="highlight-res">1</strong></p>`, action: () => { elements['val-y-tab2'].textContent='y: 1'; }}, { title: "Instance 3: Calculate Error", explanation: `<p>Calculate final error: <strong>e = d - y</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 1 - 1 = <strong class="highlight-res">0</strong></p><p class="mt-2">Error is 0. Correctly classified. <strong>No weight update.</strong></p>`, action: () => { elements['val-y-tab2'].textContent='e: 0'; }}, { title: "Training Complete", explanation: `<p>All training instances processed. Restart to see it again.</p>`, action: () => { clearHighlights(); setInputValues(['','','']); elements['val-y-tab2'].textContent=''; }} ]; function updateButtonsState() { prevButton.disabled = currentStep<=0; prevButton.classList.toggle('opacity-50',prevButton.disabled); prevButton.classList.toggle('cursor-not-allowed',prevButton.disabled); if(currentStep>=steps.length-1){nextButton.innerText='Restart';}else if(currentStep<0){nextButton.innerText='Start';}else{nextButton.innerText='Next';}} function renderStep(stepIndex, isBack) { if(stepIndex<0||stepIndex>=steps.length)return; const step=steps[stepIndex]; if(isBack){ resetData(); for(let i=0;i<stepIndex;i++){ const s=steps[i]; if(s.title.includes("Update Weights")){s.action();}}} currentStep=stepIndex; explanationContainer.innerHTML=`<div class="fade-in"><h2 class="text-xl font-bold text-blue-700 mb-4">${step.title}</h2><div>${step.explanation}</div></div>`; step.action(); updateButtonsState(); } nextButton.addEventListener('click',()=>{let next=currentStep+1;if(next>=steps.length){resetData();next=0;}renderStep(next,false);}); prevButton.addEventListener('click',()=>{let prev=currentStep-1;if(prev>=0){renderStep(prev,true);}}); function initialize(){ currentStep=-1; resetData(); explanationContainer.innerHTML=`<h2 class="text-xl font-bold text-blue-700 mb-4">Welcome!</h2><p>This is an interactive visualization of a single Perceptron learning.</p><p class="mt-2">Click "Start" to walk through the training process.</p>`; updateWeightText(data.w); clearHighlights(); setInputValues(['','','']); elements['val-y-tab2'].textContent=''; updateButtonsState(); } initialize();
         }
         
         // --- Tab 3: Complex Network Visualization ---
         function initializeComplexNetworkTab() {
+            const svgNS = "http://www.w3.org/2000/svg"; const svg = document.getElementById('network-svg-tab3'); const explanationContainer = document.getElementById('explanation-container-tab3'); const nextButton = document.getElementById('next-btn-tab3'); const prevButton = document.getElementById('prev-btn-tab3'); const inputs = [ { id: 'x1', cx: 50, cy: 50, class: 'input-node', label: 'x1' }, { id: 'x2', cx: 50, cy: 110, class: 'input-node', label: 'x2' }, { id: 'x3', cx: 50, cy: 170, class: 'input-node', label: 'x3' }, { id: 'b', cx: 50, cy: 230, class: 'bias-node', label: 'bias' } ]; const outputs = [ { id: 'u4', cx: 300, cy: 100, class: 'output-node', label: 'u4' }, { id: 'u5', cx: 300, cy: 180, class: 'output-node', label: 'u5' } ]; let elements = {}; function createText(x, y, content, className, id) { const text = document.createElementNS(svgNS, 'text'); text.setAttribute('x', x); text.setAttribute('y', y); text.setAttribute('class', className); if(id) text.id = id; text.textContent = content; return text; } inputs.forEach(input => { outputs.forEach(output => { const line = document.createElementNS(svgNS, 'line'); const lineId = `w-${input.id}-${output.id}-tab3`; line.id = lineId; line.setAttribute('x1', input.cx + 20); line.setAttribute('y1', input.cy); line.setAttribute('x2', output.cx - 20); line.setAttribute('y2', output.cy); line.setAttribute('class', 'line'); svg.appendChild(line); elements[lineId] = line; const wx = (input.cx + output.cx) / 2 - 20; const wy = (input.cy + output.cy) / 2; const weightTextId = `wt-${input.id}-${output.id}-tab3`; const weightText = createText(wx, wy, '', 'weight-text', weightTextId); svg.appendChild(weightText); elements[weightTextId] = weightText; }); }); [...inputs, ...outputs].forEach(nodeInfo => { const group = document.createElementNS(svgNS, 'g'); const circle = document.createElementNS(svgNS, 'circle'); circle.id = `${nodeInfo.id}-tab3`; circle.setAttribute('cx', nodeInfo.cx); circle.setAttribute('cy', nodeInfo.cy); circle.setAttribute('r', 20); circle.setAttribute('class', `node ${nodeInfo.class}`); group.appendChild(circle); elements[circle.id] = circle; const label = createText(nodeInfo.cx, nodeInfo.cy, nodeInfo.label, 'node-text'); group.appendChild(label); const valueId = `val-${nodeInfo.id}-tab3`; const valueText = createText(nodeInfo.cx, nodeInfo.cy + 30, '', 'value-text', valueId); group.appendChild(valueText); elements[valueId] = valueText; svg.appendChild(group); }); let currentStep = -1; const initialData = { w: [ [0.2, 0.3, -0.1, 0.5], [0.7, -1, 0.6, 0.4] ], x_t: [0.5, 0.5, 0.3, -1], d_t: [1, 1], x_t1: [-0.4, -0.2, 0.1, -1], d_t1: [1, 0], eta: 0.1 }; let data = {}; function resetData() { data = JSON.parse(JSON.stringify(initialData)); } function clearHighlights() { Object.values(elements).forEach(el => { el.classList.remove('node-highlight', 'line-highlight', 'output-highlight'); }); } function updateWeightText(weights) { elements['wt-x1-u4-tab3'].textContent = weights[0][0].toFixed(2); elements['wt-x2-u4-tab3'].textContent = weights[0][1].toFixed(2); elements['wt-x3-u4-tab3'].textContent = weights[0][2].toFixed(2); elements['wt-b-u4-tab3'].textContent = weights[0][3].toFixed(2); elements['wt-x1-u5-tab3'].textContent = weights[1][0].toFixed(2); elements['wt-x2-u5-tab3'].textContent = weights[1][1].toFixed(2); elements['wt-x3-u5-tab3'].textContent = weights[1][2].toFixed(2); elements['wt-b-u5-tab3'].textContent = weights[1][3].toFixed(2); } const steps = [ { title: "Start of Training (Step t)", explanation: `<p>The network starts with initial weights and receives the first input vector <strong>x(t)</strong>.</p><p class="mt-4"><strong>Input x(t):</strong> [${initialData.x_t.join(', ')}]</p><p><strong>Desired d(t):</strong> [${initialData.d_t.join(', ')}]</p>`, action: () => { clearHighlights(); updateWeightText(data.w); ['x1', 'x2', 'x3', 'b'].forEach((id, i) => { elements[`val-${id}-tab3`].textContent = `in: ${data.x_t[i]}`; elements[`${id}-tab3`].classList.add('node-highlight'); }); elements['val-u4-tab3'].textContent = ''; elements['val-u5-tab3'].textContent = ''; } }, { title: "1. Calculate Net Input for u4", explanation: `<p>Net input is the sum of inputs multiplied by their weights.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(0.2*0.5)+(0.3*0.5)+(-0.1*0.3)+(0.5*-1)=<strong class="highlight-res">-0.28</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`${id}-tab3`].classList.add('node-highlight'); elements[`w-${id}-u4-tab3`].classList.add('line-highlight'); }); elements['u4-tab3'].classList.add('output-highlight'); elements['val-u4-tab3'].textContent = 'net: -0.28'; elements['val-u5-tab3'].textContent = ''; } }, { title: "1. Calculate Net Input for u5", explanation: `<p>We do the same for the second output neuron, u5.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(0.7*0.5)+(-1*0.5)+(0.6*0.3)+(0.4*-1)=<strong class="highlight-res">-0.37</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`${id}-tab3`].classList.add('node-highlight'); elements[`w-${id}-u5-tab3`].classList.add('line-highlight'); }); elements['u4-tab3'].classList.add('output-highlight'); elements['u5-tab3'].classList.add('output-highlight'); elements['val-u4-tab3'].textContent = 'net: -0.28'; elements['val-u5-tab3'].textContent = 'net: -0.37'; } }, { title: "2. Apply Activation Function", explanation: `<p>A threshold function is used. If net > 0, output is 1, otherwise 0.</p><p class="mt-2"><strong>y4:</strong> -0.28 < 0 &rarr; <strong class="highlight-res">0</strong></p><p><strong>y5:</strong> -0.37 < 0 &rarr; <strong class="highlight-res">0</strong></p><p class="mt-2">Actual output <strong>y(t)</strong> = [0, 0]</p>`, action: () => { clearHighlights(); elements['u4-tab3'].classList.add('output-highlight'); elements['u5-tab3'].classList.add('output-highlight'); elements['val-u4-tab3'].textContent = 'y: 0'; elements['val-u5-tab3'].textContent = 'y: 0'; } }, { title: "3. Calculate Error", explanation: `<p>Error = Desired - Actual</p><p class="mt-2"><strong>e4:</strong> 1 - 0 = <strong class="highlight-res">1</strong></p><p><strong>e5:</strong> 1 - 0 = <strong class="highlight-res">1</strong></p><p class="mt-2">Since there is an error, weights must be updated.</p>`, action: () => { elements['val-u4-tab3'].textContent = 'e: 1'; elements['val-u5-tab3'].textContent = 'e: 1'; } }, { title: "4a. Calculate Weight Change Δw for u4", explanation: `<p>Calculate change for u4 weights: Δw = η * e4 * x(t)</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw_u4 = 0.1 * 1 * [0.5,0.5,0.3,-1] = <strong class="highlight-res">[0.05,0.05,0.03,-0.1]</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u4-tab3`].classList.add('line-highlight'); }); } }, { title: "4b. Calculate Weight Change Δw for u5", explanation: `<p>Calculate change for u5 weights: Δw = η * e5 * x(t)</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw_u5 = 0.1 * 1 * [0.5,0.5,0.3,-1] = <strong class="highlight-res">[0.05,0.05,0.03,-0.1]</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u5-tab3`].classList.add('line-highlight'); }); } }, { title: "5. Update Weight Matrix W(t)", explanation: `<p>Add ΔW to W(t-1).</p><p class="mt-2"><strong>Equation:</strong> W(t) = W(t-1) + ΔW(t)</p><p class="font-mono text-sm bg-gray-200 p-2 rounded mt-2">[[0.2,0.3,-0.1,0.5],<br>[0.7,-1,0.6,0.4]]<br>+<br>[[0.05,0.05,0.03,-0.1],<br>[0.05,0.05,0.03,-0.1]]<br>=<br><strong class="highlight-res">[[0.25,0.35,-0.07,0.4],<br>[0.75,-0.95,0.63,0.3]]</strong></p>`, action: () => { clearHighlights(); const x = data.x_t, e = [1, 1]; for(let i=0; i<2; i++) { for(let j=0; j<4; j++) { data.w[i][j] += data.eta * e[i] * x[j]; } } updateWeightText(data.w); Object.keys(elements).filter(k => k.startsWith('w-')).forEach(id => elements[id].classList.add('line-highlight')); } }, { title: "Start of Step t+1", explanation: `<p>The network now has updated weights. Use next input vector <strong>x(t+1)</strong>.</p><p class="mt-4"><strong>Input x(t+1):</strong> [${initialData.x_t1.join(', ')}]</p><p><strong>Desired d(t+1):</strong> [${initialData.d_t1.join(', ')}]</p>`, action: () => { clearHighlights(); updateWeightText(data.w); ['x1','x2','x3','b'].forEach((id, i) => { elements[`val-${id}-tab3`].textContent = `in: ${data.x_t1[i]}`; elements[`${id}-tab3`].classList.add('node-highlight'); }); elements['val-u4-tab3'].textContent = ''; elements['val-u5-tab3'].textContent = ''; } }, { title: "1. Calculate New Net Inputs", explanation: `<p>Repeat with new data and updated weights.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono"><strong>u4:</strong> (0.25*-0.4)+...=<strong class="highlight-res">-0.58</strong><br><strong>u5:</strong> (0.75*-0.4)+...=<strong class="highlight-res">-0.35</strong></p>`, action: () => { clearHighlights(); ['u4-tab3','u5-tab3'].forEach(id => elements[id].classList.add('output-highlight')); elements['val-u4-tab3'].textContent = 'net: -0.58'; elements['val-u5-tab3'].textContent = 'net: -0.35'; } }, { title: "2. Apply Activation Function", explanation: `<p>Apply threshold again.</p><p class="mt-2"><strong>y4:</strong> -0.58 < 0 &rarr; <strong class="highlight-res">0</strong></p><p><strong>y5:</strong> -0.35 < 0 &rarr; <strong class="highlight-res">0</strong></p><p class="mt-2">Actual <strong>y(t+1)</strong>=[0,0], Desired <strong>d(t+1)</strong>=[1,0]</p>`, action: () => { elements['val-u4-tab3'].textContent = 'y: 0'; elements['val-u5-tab3'].textContent = 'y: 0'; } }, { title: "3. Calculate Final Error", explanation: `<p>Error = Desired - Actual</p><p class="mt-2"><strong>e4:</strong> 1 - 0 = <strong class="highlight-res">1</strong></p><p><strong>e5:</strong> 0 - 0 = <strong class="highlight-res">0</strong></p><p class="mt-2">Error for u5 is now 0. Only weights for u4 will be updated.</p>`, action: () => { elements['val-u4-tab3'].textContent = 'e: 1'; elements['val-u5-tab3'].textContent = 'e: 0'; } }, { title: "4a. Calculate Weight Change Δw for u4", explanation: `<p>Calculate change for u4 weights: Δw = η * e4 * x(t+1)</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw_u4=0.1*1*[-0.4,-0.2,0.1,-1]=<strong class="highlight-res">[-0.04,-0.02,0.01,-0.1]</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u4-tab3`].classList.add('line-highlight'); }); } }, { title: "4b. Calculate Weight Change Δw for u5", explanation: `<p>Calculate change for u5 weights. Since e5=0, there is no change.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw_u5=0.1*0*[-0.4,-0.2,0.1,-1]=<strong class="highlight-res">[0,0,0,0]</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u5-tab3`].classList.add('line-highlight'); }); } }, { title: "5. Update Final Weight Matrix W(t+1)", explanation: `<p>Add new ΔW to W(t) to get final weights.</p><p class="mt-2"><strong>Equation:</strong> W(t+1) = W(t)+ΔW(t+1)</p><p class="font-mono text-sm bg-gray-200 p-2 rounded mt-2">[[0.25,0.35,-0.07,0.4],<br>[0.75,-0.95,0.63,0.3]]<br>+<br>[[-0.04,-0.02,0.01,-0.1],<br>[0.0,0.0,0.0,0.0]]<br>=<br><strong class="highlight-res">[[0.21,0.33,-0.06,0.3],<br>[0.75,-0.95,0.63,0.3]]</strong></p>`, action: () => { clearHighlights(); const x=data.x_t1, e=[1,0]; for(let i=0;i<2;i++){ for(let j=0;j<4;j++){ data.w[i][j]+=data.eta*e[i]*x[j]; }} updateWeightText(data.w); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u4-tab3`].classList.add('line-highlight'); }); } }, { title: "Training Complete", explanation: `<p>After two steps, training is complete. The network has adjusted its weights. Restart to see the process again.</p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`val-${id}-tab3`].textContent = ``; }); elements['val-u4-tab3'].textContent = ''; elements['val-u5-tab3'].textContent = ''; } } ]; function updateButtonsState() { prevButton.disabled = currentStep <= 0; prevButton.classList.toggle('opacity-50', prevButton.disabled); prevButton.classList.toggle('cursor-not-allowed', prevButton.disabled); if (currentStep >= steps.length - 1) { nextButton.innerText = 'Restart'; } else if (currentStep < 0) { nextButton.innerText = 'Start'; } else { nextButton.innerText = 'Next'; } } function renderStep(stepIndex, isSteppingBack = false) { if (stepIndex < 0 || stepIndex >= steps.length) return; if(isSteppingBack) { resetData(); for(let i=0; i < stepIndex; i++) { if (steps[i].title.includes("Update Weight")) steps[i].action(); } } currentStep = stepIndex; const step = steps[currentStep]; explanationContainer.innerHTML = `<div class="fade-in"><h2 class="text-xl font-bold text-blue-700 mb-4">${step.title}</h2><div>${step.explanation}</div></div>`; step.action(); updateButtonsState(); } nextButton.addEventListener('click', () => { let nextStep = currentStep + 1; if (nextStep >= steps.length) { resetData(); nextStep = 0; } renderStep(nextStep); }); prevButton.addEventListener('click', () => { let prevStep = currentStep - 1; if (prevStep >= 0) { renderStep(prevStep, true); } }); function initialize(){ currentStep = -1; resetData(); explanationContainer.innerHTML = `<h2 class="text-xl font-bold text-blue-700 mb-4">Welcome!</h2><p>This is an interactive visualization of a simple Perceptron network learning.</p><p class="mt-4">Click "Start" to walk through the training process step-by-step.</p>`; updateWeightText(data.w); clearHighlights(); ['x1','x2','x3','b','u4','u5'].forEach(id => { elements[`val-${id}-tab3`].textContent = ``; }); updateButtonsState(); } initialize();
+        }
+
+        // --- Tab 4: Delta Rule (Exercise 2.3) ---
+        function initializeDeltaRuleTab() {
             const svgNS = "http://www.w3.org/2000/svg";
-            const svg = document.getElementById('network-svg-tab3');
-            const explanationContainer = document.getElementById('explanation-container-tab3');
-            const nextButton = document.getElementById('next-btn-tab3');
-            const prevButton = document.getElementById('prev-btn-tab3');
-            const inputs = [ { id: 'x1', cx: 50, cy: 50, class: 'input-node', label: 'x1' }, { id: 'x2', cx: 50, cy: 110, class: 'input-node', label: 'x2' }, { id: 'x3', cx: 50, cy: 170, class: 'input-node', label: 'x3' }, { id: 'b', cx: 50, cy: 230, class: 'bias-node', label: 'bias' } ];
-            const outputs = [ { id: 'u4', cx: 300, cy: 100, class: 'output-node', label: 'u4' }, { id: 'u5', cx: 300, cy: 180, class: 'output-node', label: 'u5' } ];
+            const svg = document.getElementById('network-svg-tab4');
+            const explanationContainer = document.getElementById('explanation-container-tab4');
+            const nextButton = document.getElementById('next-btn-tab4');
+            const prevButton = document.getElementById('prev-btn-tab4');
+            const inputs = [ { id: 'x1', cx: 50, cy: 80, class: 'input-node', label: 'x1' }, { id: 'x2', cx: 50, cy: 150, class: 'input-node', label: 'x2' }, { id: 'x3', cx: 50, cy: 220, class: 'input-node', label: 'x3' } ];
+            const outputs = [ { id: 'u4', cx: 300, cy: 150, class: 'output-node', label: 'u4' } ];
             let elements = {};
             function createText(x, y, content, className, id) { const text = document.createElementNS(svgNS, 'text'); text.setAttribute('x', x); text.setAttribute('y', y); text.setAttribute('class', className); if(id) text.id = id; text.textContent = content; return text; }
-            inputs.forEach(input => { outputs.forEach(output => { const line = document.createElementNS(svgNS, 'line'); const lineId = `w-${input.id}-${output.id}-tab3`; line.id = lineId; line.setAttribute('x1', input.cx + 20); line.setAttribute('y1', input.cy); line.setAttribute('x2', output.cx - 20); line.setAttribute('y2', output.cy); line.setAttribute('class', 'line'); svg.appendChild(line); elements[lineId] = line; const wx = (input.cx + output.cx) / 2 - 20; const wy = (input.cy + output.cy) / 2; const weightTextId = `wt-${input.id}-${output.id}-tab3`; const weightText = createText(wx, wy, '', 'weight-text', weightTextId); svg.appendChild(weightText); elements[weightTextId] = weightText; }); });
-            [...inputs, ...outputs].forEach(nodeInfo => { const group = document.createElementNS(svgNS, 'g'); const circle = document.createElementNS(svgNS, 'circle'); circle.id = `${nodeInfo.id}-tab3`; circle.setAttribute('cx', nodeInfo.cx); circle.setAttribute('cy', nodeInfo.cy); circle.setAttribute('r', 20); circle.setAttribute('class', `node ${nodeInfo.class}`); group.appendChild(circle); elements[circle.id] = circle; const label = createText(nodeInfo.cx, nodeInfo.cy, nodeInfo.label, 'node-text'); group.appendChild(label); const valueId = `val-${nodeInfo.id}-tab3`; const valueText = createText(nodeInfo.cx, nodeInfo.cy + 30, '', 'value-text', valueId); group.appendChild(valueText); elements[valueId] = valueText; svg.appendChild(group); });
+            inputs.forEach(input => { outputs.forEach(output => { const line = document.createElementNS(svgNS, 'line'); const lineId = `w-${input.id}-${output.id}-tab4`; line.id = lineId; line.setAttribute('x1', input.cx + 20); line.setAttribute('y1', input.cy); line.setAttribute('x2', output.cx - 20); line.setAttribute('y2', output.cy); line.setAttribute('class', 'line'); svg.appendChild(line); elements[lineId] = line; const wx = (input.cx + output.cx) / 2 - 20; const wy = (input.cy + output.cy) / 2 + (input.id === 'x2' ? -15 : 15); const weightTextId = `wt-${input.id}-${output.id}-tab4`; const weightText = createText(wx, wy, '', 'weight-text', weightTextId); svg.appendChild(weightText); elements[weightTextId] = weightText; }); });
+            [...inputs, ...outputs].forEach(nodeInfo => { const group = document.createElementNS(svgNS, 'g'); const circle = document.createElementNS(svgNS, 'circle'); circle.id = `${nodeInfo.id}-tab4`; circle.setAttribute('cx', nodeInfo.cx); circle.setAttribute('cy', nodeInfo.cy); circle.setAttribute('r', 20); circle.setAttribute('class', `node ${nodeInfo.class}`); group.appendChild(circle); elements[circle.id] = circle; const label = createText(nodeInfo.cx, nodeInfo.cy, nodeInfo.label, 'node-text'); group.appendChild(label); const valueId = `val-${nodeInfo.id}-tab4`; const valueText = createText(nodeInfo.cx, nodeInfo.cy + 30, '', 'value-text', valueId); group.appendChild(valueText); elements[valueId] = valueText; svg.appendChild(group); });
             let currentStep = -1;
-            const initialData = { w: [ [0.2, 0.3, -0.1, 0.5], [0.7, -1, 0.6, 0.4] ], x_t: [0.5, 0.5, 0.3, -1], d_t: [1, 1], x_t1: [-0.4, -0.2, 0.1, -1], d_t1: [1, 0], eta: 0.1 };
+            const initialData = { w: [0.32, -1.61, 0.77], x: [0.5, 0.5, 0.3], d: 1, eta: 0.1, net: 0, y: 0, error: 0, delta_w: [0, 0, 0] };
             let data = {};
             function resetData() { data = JSON.parse(JSON.stringify(initialData)); }
             function clearHighlights() { Object.values(elements).forEach(el => { el.classList.remove('node-highlight', 'line-highlight', 'output-highlight'); }); }
-            function updateWeightText(weights) { elements['wt-x1-u4-tab3'].textContent = weights[0][0].toFixed(2); elements['wt-x2-u4-tab3'].textContent = weights[0][1].toFixed(2); elements['wt-x3-u4-tab3'].textContent = weights[0][2].toFixed(2); elements['wt-b-u4-tab3'].textContent = weights[0][3].toFixed(2); elements['wt-x1-u5-tab3'].textContent = weights[1][0].toFixed(2); elements['wt-x2-u5-tab3'].textContent = weights[1][1].toFixed(2); elements['wt-x3-u5-tab3'].textContent = weights[1][2].toFixed(2); elements['wt-b-u5-tab3'].textContent = weights[1][3].toFixed(2); }
+            function updateWeightText(weights) { elements['wt-x1-u4-tab4'].textContent = `w1=${weights[0].toFixed(3)}`; elements['wt-x2-u4-tab4'].textContent = `w2=${weights[1].toFixed(3)}`; elements['wt-x3-u4-tab4'].textContent = `w3=${weights[2].toFixed(3)}`; }
+            function setInputValues(inputs) { elements['val-x1-tab4'].textContent = `in: ${inputs[0]}`; elements['val-x2-tab4'].textContent = `in: ${inputs[1]}`; elements['val-x3-tab4'].textContent = `in: ${inputs[2]}`; }
             const steps = [
-                { title: "Start of Training (Step t)", explanation: `<p>The network starts with initial weights and receives the first input vector <strong>x(t)</strong>.</p><p class="mt-4"><strong>Input x(t):</strong> [${initialData.x_t.join(', ')}]</p><p><strong>Desired d(t):</strong> [${initialData.d_t.join(', ')}]</p>`, action: () => { clearHighlights(); updateWeightText(data.w); ['x1', 'x2', 'x3', 'b'].forEach((id, i) => { elements[`val-${id}-tab3`].textContent = `in: ${data.x_t[i]}`; elements[`${id}-tab3`].classList.add('node-highlight'); }); elements['val-u4-tab3'].textContent = ''; elements['val-u5-tab3'].textContent = ''; } },
-                { title: "1. Calculate Net Input for u4", explanation: `<p>Net input is the sum of inputs multiplied by their weights.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(0.2*0.5)+(0.3*0.5)+(-0.1*0.3)+(0.5*-1)=<strong class="highlight-res">-0.28</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`${id}-tab3`].classList.add('node-highlight'); elements[`w-${id}-u4-tab3`].classList.add('line-highlight'); }); elements['u4-tab3'].classList.add('output-highlight'); elements['val-u4-tab3'].textContent = 'net: -0.28'; elements['val-u5-tab3'].textContent = ''; } },
-                { title: "1. Calculate Net Input for u5", explanation: `<p>We do the same for the second output neuron, u5.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(0.7*0.5)+(-1*0.5)+(0.6*0.3)+(0.4*-1)=<strong class="highlight-res">-0.37</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`${id}-tab3`].classList.add('node-highlight'); elements[`w-${id}-u5-tab3`].classList.add('line-highlight'); }); elements['u4-tab3'].classList.add('output-highlight'); elements['u5-tab3'].classList.add('output-highlight'); elements['val-u4-tab3'].textContent = 'net: -0.28'; elements['val-u5-tab3'].textContent = 'net: -0.37'; } },
-                { title: "2. Apply Activation Function", explanation: `<p>A threshold function is used. If net > 0, output is 1, otherwise 0.</p><p class="mt-2"><strong>y4:</strong> -0.28 < 0 &rarr; <strong class="highlight-res">0</strong></p><p><strong>y5:</strong> -0.37 < 0 &rarr; <strong class="highlight-res">0</strong></p><p class="mt-2">Actual output <strong>y(t)</strong> = [0, 0]</p>`, action: () => { clearHighlights(); elements['u4-tab3'].classList.add('output-highlight'); elements['u5-tab3'].classList.add('output-highlight'); elements['val-u4-tab3'].textContent = 'y: 0'; elements['val-u5-tab3'].textContent = 'y: 0'; } },
-                { title: "3. Calculate Error", explanation: `<p>Error = Desired - Actual</p><p class="mt-2"><strong>e4:</strong> 1 - 0 = <strong class="highlight-res">1</strong></p><p><strong>e5:</strong> 1 - 0 = <strong class="highlight-res">1</strong></p><p class="mt-2">Since there is an error, weights must be updated.</p>`, action: () => { elements['val-u4-tab3'].textContent = 'e: 1'; elements['val-u5-tab3'].textContent = 'e: 1'; } },
-                { title: "4a. Calculate Weight Change Δw for u4", explanation: `<p>Calculate change for u4 weights: Δw = η * e4 * x(t)</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw_u4 = 0.1 * 1 * [0.5,0.5,0.3,-1] = <strong class="highlight-res">[0.05,0.05,0.03,-0.1]</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u4-tab3`].classList.add('line-highlight'); }); } },
-                { title: "4b. Calculate Weight Change Δw for u5", explanation: `<p>Calculate change for u5 weights: Δw = η * e5 * x(t)</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw_u5 = 0.1 * 1 * [0.5,0.5,0.3,-1] = <strong class="highlight-res">[0.05,0.05,0.03,-0.1]</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u5-tab3`].classList.add('line-highlight'); }); } },
-                { title: "5. Update Weight Matrix W(t)", explanation: `<p>Add ΔW to W(t-1).</p><p class="mt-2"><strong>Equation:</strong> W(t) = W(t-1) + ΔW(t)</p><p class="font-mono text-sm bg-gray-200 p-2 rounded mt-2">[[0.2,0.3,-0.1,0.5],<br>[0.7,-1,0.6,0.4]]<br>+<br>[[0.05,0.05,0.03,-0.1],<br>[0.05,0.05,0.03,-0.1]]<br>=<br><strong class="highlight-res">[[0.25,0.35,-0.07,0.4],<br>[0.75,-0.95,0.63,0.3]]</strong></p>`, action: () => { clearHighlights(); const x = data.x_t, e = [1, 1]; for(let i=0; i<2; i++) { for(let j=0; j<4; j++) { data.w[i][j] += data.eta * e[i] * x[j]; } } updateWeightText(data.w); Object.keys(elements).filter(k => k.startsWith('w-')).forEach(id => elements[id].classList.add('line-highlight')); } },
-                { title: "Start of Step t+1", explanation: `<p>The network now has updated weights. Use next input vector <strong>x(t+1)</strong>.</p><p class="mt-4"><strong>Input x(t+1):</strong> [${initialData.x_t1.join(', ')}]</p><p><strong>Desired d(t+1):</strong> [${initialData.d_t1.join(', ')}]</p>`, action: () => { clearHighlights(); updateWeightText(data.w); ['x1','x2','x3','b'].forEach((id, i) => { elements[`val-${id}-tab3`].textContent = `in: ${data.x_t1[i]}`; elements[`${id}-tab3`].classList.add('node-highlight'); }); elements['val-u4-tab3'].textContent = ''; elements['val-u5-tab3'].textContent = ''; } },
-                { title: "1. Calculate New Net Inputs", explanation: `<p>Repeat with new data and updated weights.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono"><strong>u4:</strong> (0.25*-0.4)+...=<strong class="highlight-res">-0.58</strong><br><strong>u5:</strong> (0.75*-0.4)+...=<strong class="highlight-res">-0.35</strong></p>`, action: () => { clearHighlights(); ['u4-tab3','u5-tab3'].forEach(id => elements[id].classList.add('output-highlight')); elements['val-u4-tab3'].textContent = 'net: -0.58'; elements['val-u5-tab3'].textContent = 'net: -0.35'; } },
-                { title: "2. Apply Activation Function", explanation: `<p>Apply threshold again.</p><p class="mt-2"><strong>y4:</strong> -0.58 < 0 &rarr; <strong class="highlight-res">0</strong></p><p><strong>y5:</strong> -0.35 < 0 &rarr; <strong class="highlight-res">0</strong></p><p class="mt-2">Actual <strong>y(t+1)</strong>=[0,0], Desired <strong>d(t+1)</strong>=[1,0]</p>`, action: () => { elements['val-u4-tab3'].textContent = 'y: 0'; elements['val-u5-tab3'].textContent = 'y: 0'; } },
-                { title: "3. Calculate Final Error", explanation: `<p>Error = Desired - Actual</p><p class="mt-2"><strong>e4:</strong> 1 - 0 = <strong class="highlight-res">1</strong></p><p><strong>e5:</strong> 0 - 0 = <strong class="highlight-res">0</strong></p><p class="mt-2">Error for u5 is now 0. Only weights for u4 will be updated.</p>`, action: () => { elements['val-u4-tab3'].textContent = 'e: 1'; elements['val-u5-tab3'].textContent = 'e: 0'; } },
-                { title: "4a. Calculate Weight Change Δw for u4", explanation: `<p>Calculate change for u4 weights: Δw = η * e4 * x(t+1)</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw_u4=0.1*1*[-0.4,-0.2,0.1,-1]=<strong class="highlight-res">[-0.04,-0.02,0.01,-0.1]</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u4-tab3`].classList.add('line-highlight'); }); } },
-                { title: "4b. Calculate Weight Change Δw for u5", explanation: `<p>Calculate change for u5 weights. Since e5=0, there is no change.</p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw_u5=0.1*0*[-0.4,-0.2,0.1,-1]=<strong class="highlight-res">[0,0,0,0]</strong></p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u5-tab3`].classList.add('line-highlight'); }); } },
-                { title: "5. Update Final Weight Matrix W(t+1)", explanation: `<p>Add new ΔW to W(t) to get final weights.</p><p class="mt-2"><strong>Equation:</strong> W(t+1) = W(t)+ΔW(t+1)</p><p class="font-mono text-sm bg-gray-200 p-2 rounded mt-2">[[0.25,0.35,-0.07,0.4],<br>[0.75,-0.95,0.63,0.3]]<br>+<br>[[-0.04,-0.02,0.01,-0.1],<br>[0.0,0.0,0.0,0.0]]<br>=<br><strong class="highlight-res">[[0.21,0.33,-0.06,0.3],<br>[0.75,-0.95,0.63,0.3]]</strong></p>`, action: () => { clearHighlights(); const x=data.x_t1, e=[1,0]; for(let i=0;i<2;i++){ for(let j=0;j<4;j++){ data.w[i][j]+=data.eta*e[i]*x[j]; }} updateWeightText(data.w); ['x1','x2','x3','b'].forEach(id => { elements[`w-${id}-u4-tab3`].classList.add('line-highlight'); }); } },
-                { title: "Training Complete", explanation: `<p>After two steps, training is complete. The network has adjusted its weights. Restart to see the process again.</p>`, action: () => { clearHighlights(); ['x1','x2','x3','b'].forEach(id => { elements[`val-${id}-tab3`].textContent = ``; }); elements['val-u4-tab3'].textContent = ''; elements['val-u5-tab3'].textContent = ''; } }
+                { title: "Problem: Exercise 2.3", explanation: `<p>A perceptron with 3 real-valued inputs uses a <strong>unipolar (sigmoid)</strong> activation function. Bias units are ignored.</p><p class="mt-4"><strong>Initial Weights w(t-1):</strong> [0.32, -1.61, 0.77]</p><p><strong>Input Vector x(t):</strong> [0.5, 0.5, 0.3]</p><p><strong>Desired Output d(t):</strong> 1</p><p><strong>Learning Rate η:</strong> 0.1</p><p class="mt-2"><strong>Goal:</strong> Calculate the new weight vector <strong>w(t)</strong>.</p>`, action: () => { clearHighlights(); updateWeightText(data.w); setInputValues(data.x); ['x1-tab4', 'x2-tab4', 'x3-tab4'].forEach(id => elements[id].classList.add('node-highlight')); elements['val-u4-tab4'].textContent = ''; } },
+                { title: "1. Calculate Net Input (u4)", explanation: `<p>The net input is the weighted sum: <br><strong>u4 = w(t-1)<sup>T</sup> &middot; x(t)</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">(0.32 * 0.5) + (-1.61 * 0.5) + (0.77 * 0.3) <br>= 0.16 - 0.805 + 0.231 = <strong class="highlight-res">-0.414</strong></p>`, action: () => { clearHighlights(); ['x1-tab4', 'x2-tab4', 'x3-tab4'].forEach(id => { elements[id].classList.add('node-highlight'); const inputId = id.split('-')[0]; elements[`w-${inputId}-u4-tab4`].classList.add('line-highlight'); }); elements['u4-tab4'].classList.add('output-highlight'); data.net = -0.414; elements['val-u4-tab4'].textContent = `net: -0.414`; } },
+                { title: "2. Apply Sigmoid Activation (y4)", explanation: `<p>The activation <strong>y4</strong> is calculated using the sigmoid function: <br><strong>y = 1 / (1 + e<sup>-net</sup>)</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">y4 = 1 / (1 + e<sup>-(-0.414)</sup>) <br>y4 = 1 / (1 + e<sup>0.414</sup>) <br>y4 = 1 / (1 + 1.5128) = 1 / 2.5128 = <strong class="highlight-res">0.398</strong></p>`, action: () => { data.y = 0.398; elements['val-u4-tab4'].textContent = `y: 0.398`; } },
+                { title: "3. Calculate Error (e)", explanation: `<p>The error is the difference between desired and actual output: <br><strong>e = d(t) - y4</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">e = 1 - 0.398 = <strong class="highlight-res">0.602</strong></p>`, action: () => { data.error = 0.602; elements['val-u4-tab4'].textContent = `e: 0.602`; } },
+                { title: "4. Calculate Weight Change (Δw)", explanation: `<p>The Delta Rule for a sigmoid unit is: <br><strong>Δw = η * e * y * (1 - y) * x(t)</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">Δw = 0.1 * 0.602 * 0.398 * (1 - 0.398) * [0.5, 0.5, 0.3] <br>Δw = 0.1 * 0.602 * 0.398 * 0.602 * [0.5, 0.5, 0.3] <br>Δw = 0.0144 * [0.5, 0.5, 0.3] <br>Δw = <strong class="highlight-res">[0.007, 0.007, 0.004]</strong> (rounded)</p>`, action: () => { clearHighlights(); ['w-x1-u4-tab4', 'w-x2-u4-tab4', 'w-x3-u4-tab4'].forEach(id => { elements[id].classList.add('line-highlight'); }); data.delta_w = [0.007, 0.007, 0.004]; } },
+                { title: "5. Update Weights w(t)", explanation: `<p>The new weight vector is the old vector plus the change: <br><strong>w(t) = w(t-1) + Δw</strong></p><p class="mt-2 text-sm bg-gray-200 p-2 rounded font-mono">w(t) = [0.32, -1.61, 0.77] + [0.007, 0.007, 0.004] <br>w(t) = <strong class="highlight-res">[0.327, -1.603, 0.774]</strong></p>`, action: () => { for(let i=0; i<3; i++) { data.w[i] += data.delta_w[i]; } updateWeightText(data.w); } },
+                { title: "Training Step Complete", explanation: `<p>The single training step is complete. The new weights <strong>w(t)</strong> have been calculated. You can restart to see the process again.</p>`, action: () => { clearHighlights(); setInputValues(['', '', '']); elements['val-u4-tab4'].textContent = ''; } }
             ];
             function updateButtonsState() { prevButton.disabled = currentStep <= 0; prevButton.classList.toggle('opacity-50', prevButton.disabled); prevButton.classList.toggle('cursor-not-allowed', prevButton.disabled); if (currentStep >= steps.length - 1) { nextButton.innerText = 'Restart'; } else if (currentStep < 0) { nextButton.innerText = 'Start'; } else { nextButton.innerText = 'Next'; } }
-            function renderStep(stepIndex, isSteppingBack = false) { if (stepIndex < 0 || stepIndex >= steps.length) return; if(isSteppingBack) { resetData(); for(let i=0; i < stepIndex; i++) { if (steps[i].title.includes("Update Weight")) steps[i].action(); } } currentStep = stepIndex; const step = steps[currentStep]; explanationContainer.innerHTML = `<div class="fade-in"><h2 class="text-xl font-bold text-blue-700 mb-4">${step.title}</h2><div>${step.explanation}</div></div>`; step.action(); updateButtonsState(); }
-            nextButton.addEventListener('click', () => { let nextStep = currentStep + 1; if (nextStep >= steps.length) { resetData(); nextStep = 0; } renderStep(nextStep); });
+            function renderStep(stepIndex, isSteppingBack = false) { if (stepIndex < 0 || stepIndex >= steps.length) return; if(isSteppingBack) { resetData(); for(let i=0; i < stepIndex; i++) { if (steps[i].title.includes("Update Weights")) { const delta_w = [0.007, 0.007, 0.004]; for(let j=0; j<3; j++) { data.w[j] += delta_w[j]; } } } } currentStep = stepIndex; const step = steps[currentStep]; explanationContainer.innerHTML = `<div class="fade-in"><h2 class="text-xl font-bold text-blue-700 mb-4">${step.title}</h2><div>${step.explanation}</div></div>`; step.action(); updateButtonsState(); }
+            nextButton.addEventListener('click', () => { let nextStep = currentStep + 1; if (nextStep >= steps.length) { resetData(); nextStep = 0; } renderStep(nextStep, false); });
             prevButton.addEventListener('click', () => { let prevStep = currentStep - 1; if (prevStep >= 0) { renderStep(prevStep, true); } });
-            function initialize(){ currentStep = -1; resetData(); explanationContainer.innerHTML = `<h2 class="text-xl font-bold text-blue-700 mb-4">Welcome!</h2><p>This is an interactive visualization of a simple Perceptron network learning.</p><p class="mt-4">Click "Start" to walk through the training process step-by-step.</p>`; updateWeightText(data.w); clearHighlights(); ['x1','x2','x3','b','u4','u5'].forEach(id => { elements[`val-${id}-tab3`].textContent = ``; }); updateButtonsState(); }
+            function initialize() { currentStep = -1; resetData(); explanationContainer.innerHTML = `<h2 class="text-xl font-bold text-blue-700 mb-4">Welcome!</h2><p>This tab illustrates <strong>Exercise 2.3</strong>, which uses the <strong>Delta Rule</strong> with a sigmoid activation function.</p><p class="mt-4">Click "Start" to walk through the single training step.</p>`; updateWeightText(data.w); clearHighlights(); ['x1','x2','x3','u4'].forEach(id => { elements[`val-${id}-tab4`].textContent = ``; }); updateButtonsState(); }
             initialize();
         }
 
+        // --- Tab 5: Interactive AND/OR Gate ---
+        function initializeLogicGateTab() {
+            const svg = d3.select("#chart-tab5");
+            const w1Input = document.getElementById('w1-input');
+            const w2Input = document.getElementById('w2-input');
+            const wbInput = document.getElementById('wb-input');
+            const andBtn = document.getElementById('gate-and-btn');
+            const orBtn = document.getElementById('gate-or-btn');
+            const equationText = document.getElementById('equation-text');
+            const w1Text = document.getElementById('w1-text-tab5');
+            const w2Text = document.getElementById('w2-text-tab5');
+            const wbText = document.getElementById('wb-text-tab5');
+
+            let currentGate = 'and';
+            const truthTables = {
+                and: [
+                    { x1: 0, x2: 0, y: 0 },
+                    { x1: 0, x2: 1, y: 0 },
+                    { x1: 1, x2: 0, y: 0 },
+                    { x1: 1, x2: 1, y: 1 }
+                ],
+                or: [
+                    { x1: 0, x2: 0, y: 0 },
+                    { x1: 0, x2: 1, y: 1 },
+                    { x1: 1, x2: 0, y: 1 },
+                    { x1: 1, x2: 1, y: 1 }
+                ]
+            };
+
+            const width = 500, height = 500;
+            const margin = { top: 40, right: 20, bottom: 40, left: 40 };
+            const chartGroup = svg.append("g").attr("transform", `translate(${margin.left}, ${margin.top})`);
+            const chartWidth = width - margin.left - margin.right;
+            const chartHeight = height - margin.top - margin.bottom;
+
+            const xScale = d3.scaleLinear().domain([-0.5, 1.5]).range([0, chartWidth]);
+            const yScale = d3.scaleLinear().domain([-0.5, 1.5]).range([chartHeight, 0]);
+
+            chartGroup.append("g").attr("transform", `translate(0, ${yScale(0)})`).call(d3.axisBottom(xScale));
+            chartGroup.append("g").attr("transform", `translate(${xScale(0)}, 0)`).call(d3.axisLeft(yScale));
+            
+            svg.append("text").attr("text-anchor", "middle").attr("x", width/2).attr("y", height - 5).text("x1");
+            svg.append("text").attr("text-anchor", "middle").attr("transform", "rotate(-90)").attr("y", 15).attr("x", -height/2).text("x2");
+            svg.append("text").attr("x", width/2).attr("y", margin.top/2 + 5).attr("text-anchor", "middle").style("font-size", "16px").style("font-weight", "bold").text("Logic Gate Decision Boundary");
+
+            // Plot points
+            chartGroup.selectAll(".data-point-tab5")
+                .data(truthTables.and) // Use AND as default
+                .enter()
+                .append("circle")
+                .attr("class", "data-point-tab5")
+                .attr("cx", d => xScale(d.x1))
+                .attr("cy", d => yScale(d.x2))
+                .attr("r", 7);
+            
+            // Plot classification status (check or x)
+            chartGroup.selectAll(".status-text-tab5")
+                .data(truthTables.and)
+                .enter()
+                .append("text")
+                .attr("class", "status-text-tab5")
+                .attr("x", d => xScale(d.x1) + 12)
+                .attr("y", d => yScale(d.x2) + 4)
+                .attr("font-size", "20px");
+
+            function updatePlot() {
+                const w1 = parseFloat(w1Input.value) || 0;
+                const w2 = parseFloat(w2Input.value) || 0;
+                const wb = parseFloat(wbInput.value) || 0;
+                
+                // Update text
+                equationText.textContent = `(${w1.toFixed(2)} * x1) + (${w2.toFixed(2)} * x2) + (${wb.toFixed(2)} * -1) = 0`;
+                w1Text.textContent = `w1=${w1.toFixed(2)}`;
+                w2Text.textContent = `w2=${w2.toFixed(2)}`;
+                wbText.textContent = `wb=${wb.toFixed(2)}`;
+
+                const data = truthTables[currentGate];
+
+                // Update point colors
+                chartGroup.selectAll(".data-point-tab5")
+                    .data(data)
+                    .style("fill", d => d.y === 1 ? "#3b82f6" : "#ef4444");
+
+                // Check classification and update status text
+                chartGroup.selectAll(".status-text-tab5")
+                    .data(data)
+                    .each(function(d) {
+                        const net = (w1 * d.x1) + (w2 * d.x2) + (wb * -1);
+                        const y_pred = net > 0 ? 1 : 0;
+                        const isCorrect = (y_pred === d.y);
+                        
+                        d3.select(this)
+                            .text(isCorrect ? "✔" : "✘")
+                            .attr("class", isCorrect ? "status-text-tab5 point-correct" : "status-text-tab5 point-incorrect");
+                    });
+
+                // Calculate and draw line
+                let x1_start = -0.5, x1_end = 1.5;
+                let y1_start, y1_end;
+
+                if (w2 !== 0) {
+                    // Standard case: y = mx + c
+                    // w1*x1 + w2*x2 - wb = 0  => w2*x2 = -w1*x1 + wb => x2 = (-w1/w2)*x1 + (wb/w2)
+                    y1_start = (-w1 / w2) * x1_start + (wb / w2);
+                    y1_end = (-w1 / w2) * x1_end + (wb / w2);
+                } else if (w1 !== 0) {
+                    // Vertical line: x = c
+                    // w1*x1 - wb = 0 => x1 = wb / w1
+                    x1_start = wb / w1;
+                    x1_end = wb / w1;
+                    y1_start = -0.5;
+                    y1_end = 1.5;
+                } else {
+                    // No line (0 = wb)
+                    x1_start = -0.5; x1_end = -0.5; y1_start = -0.5; y1_end = -0.5;
+                }
+                
+                const lineCoords = [
+                    { x: xScale(x1_start), y: yScale(y1_start) },
+                    { x: xScale(x1_end), y: yScale(y1_end) }
+                ];
+                
+                let line = chartGroup.selectAll("#boundary-line-tab5").data([lineCoords]);
+                line.enter()
+                    .append("line")
+                    .attr("id", "boundary-line-tab5")
+                    .merge(line)
+                    .attr("x1", d => d[0].x)
+                    .attr("y1", d => d[0].y)
+                    .attr("x2", d => d[1].x)
+                    .attr("y2", d => d[1].y)
+                    .attr("stroke", "#f97316")
+                    .attr("stroke-width", 3);
+            }
+
+            // Event Listeners
+            [w1Input, w2Input, wbInput].forEach(input => {
+                input.addEventListener('input', updatePlot);
+            });
+
+            andBtn.addEventListener('click', () => {
+                currentGate = 'and';
+                andBtn.classList.add('active');
+                orBtn.classList.remove('active');
+                // Use example weights for AND
+                w1Input.value = 1.0;
+                w2Input.value = 1.0;
+                wbInput.value = 1.5;
+                updatePlot();
+            });
+
+            orBtn.addEventListener('click', () => {
+                currentGate = 'or';
+                orBtn.classList.add('active');
+                andBtn.classList.remove('active');
+                // Use example weights for OR
+                w1Input.value = 1.0;
+                w2Input.value = 1.0;
+                wbInput.value = 0.5;
+                updatePlot();
+            });
+
+            // Initial plot
+            andBtn.click(); // Start with AND gate selected and example weights
+        }
+        
+        // --- Tab 6: Input vs Weight Space ---
+        function initializeInputWeightSpaceTab() {
+            // --- Common Elements ---
+            const w1Input = document.getElementById('w1-input-tab6');
+            const w2Input = document.getElementById('w2-input-tab6');
+            const wbInput = document.getElementById('wb-input-tab6');
+            const andBtn = document.getElementById('gate-and-btn-tab6');
+            const orBtn = document.getElementById('gate-or-btn-tab6');
+
+            let currentGate = 'and';
+            const truthTables = {
+                and: [
+                    { x1: 0, x2: 0, y: 0 },
+                    { x1: 0, x2: 1, y: 0 },
+                    { x1: 1, x2: 0, y: 0 },
+                    { x1: 1, x2: 1, y: 1 }
+                ],
+                or: [
+                    { x1: 0, x2: 0, y: 0 },
+                    { x1: 0, x2: 1, y: 1 },
+                    { x1: 1, x2: 0, y: 1 },
+                    { x1: 1, x2: 1, y: 1 }
+                ]
+            };
+            
+            // --- Chart 1: Input Space (Left) ---
+            const svgInput = d3.select("#chart-input-space");
+            const widthIn = 500, heightIn = 500;
+            const marginIn = { top: 40, right: 20, bottom: 40, left: 40 };
+            const chartGroupIn = svgInput.append("g").attr("transform", `translate(${marginIn.left}, ${marginIn.top})`);
+            const chartWidthIn = widthIn - marginIn.left - marginIn.right;
+            const chartHeightIn = heightIn - marginIn.top - marginIn.bottom;
+
+            const xScaleIn = d3.scaleLinear().domain([-0.5, 1.5]).range([0, chartWidthIn]);
+            const yScaleIn = d3.scaleLinear().domain([-0.5, 1.5]).range([chartHeightIn, 0]);
+
+            chartGroupIn.append("g").attr("transform", `translate(0, ${yScaleIn(0)})`).call(d3.axisBottom(xScaleIn));
+            chartGroupIn.append("g").attr("transform", `translate(${xScaleIn(0)}, 0)`).call(d3.axisLeft(yScaleIn));
+            svgInput.append("text").attr("text-anchor", "middle").attr("x", widthIn/2).attr("y", heightIn - 5).text("x1 (Input Space)");
+            svgInput.append("text").attr("text-anchor", "middle").attr("transform", "rotate(-90)").attr("y", 15).attr("x", -heightIn/2).text("x2");
+            svgInput.append("text").attr("x", widthIn/2).attr("y", marginIn.top/2 + 5).attr("text-anchor", "middle").style("font-size", "16px").style("font-weight", "bold").text("Input Space (Data)");
+
+            // Plot points
+            chartGroupIn.selectAll(".data-point-tab6")
+                .data(truthTables.and)
+                .enter()
+                .append("circle")
+                .attr("class", "data-point-tab6")
+                .attr("cx", d => xScaleIn(d.x1))
+                .attr("cy", d => yScaleIn(d.x2))
+                .attr("r", 7);
+
+            // Plot classification status (check or x)
+            chartGroupIn.selectAll(".status-text-tab6")
+                .data(truthTables.and)
+                .enter()
+                .append("text")
+                .attr("class", "status-text-tab6")
+                .attr("x", d => xScaleIn(d.x1) + 12)
+                .attr("y", d => yScaleIn(d.x2) + 4)
+                .attr("font-size", "20px");
+                
+            // --- Chart 2: Weight Space (Right) ---
+            const svgWeight = d3.select("#chart-weight-space");
+            const widthW = 500, heightW = 500;
+            const marginW = { top: 40, right: 20, bottom: 40, left: 40 };
+            const chartGroupW = svgWeight.append("g").attr("transform", `translate(${marginW.left}, ${marginW.top})`);
+            const chartWidthW = widthW - marginW.left - marginW.right;
+            const chartHeightW = heightW - marginW.top - marginW.bottom;
+            
+            const xScaleW = d3.scaleLinear().domain([-1, 3]).range([0, chartWidthW]);
+            const yScaleW = d3.scaleLinear().domain([-1, 3]).range([chartHeightW, 0]);
+
+            chartGroupW.append("g").attr("transform", `translate(0, ${yScaleW(0)})`).call(d3.axisBottom(xScaleW));
+            chartGroupW.append("g").attr("transform", `translate(${xScaleW(0)}, 0)`).call(d3.axisLeft(yScaleW));
+            svgWeight.append("text").attr("text-anchor", "middle").attr("x", widthW/2).attr("y", heightW - 5).text("w1 (Weight Space)");
+            svgWeight.append("text").attr("text-anchor", "middle").attr("transform", "rotate(-90)").attr("y", 15).attr("x", -heightW/2).text("w2");
+            svgWeight.append("text").attr("x", widthW/2).attr("y", marginW.top/2 + 5).attr("text-anchor", "middle").style("font-size", "16px").style("font-weight", "bold").text("Weight Space (Solution)");
+            
+            // Group for constraint lines and region
+            const constraintsGroup = chartGroupW.append("g");
+            const weightPoint = chartGroupW.append("circle").attr("class", "weight-point").attr("r", 8);
+
+            // --- Main Update Function ---
+            function updatePlots() {
+                const w1 = parseFloat(w1Input.value) || 0;
+                const w2 = parseFloat(w2Input.value) || 0;
+                const wb = parseFloat(wbInput.value) || 0;
+                const data = truthTables[currentGate];
+                let allCorrect = true;
+
+                // --- Update Input Space ---
+                chartGroupIn.selectAll(".data-point-tab6").data(data)
+                    .style("fill", d => d.y === 1 ? "#3b82f6" : "#ef4444");
+
+                chartGroupIn.selectAll(".status-text-tab6").data(data)
+                    .each(function(d) {
+                        const net = (w1 * d.x1) + (w2 * d.x2) + (wb * -1);
+                        const y_pred = net > 0 ? 1 : 0;
+                        const isCorrect = (y_pred === d.y);
+                        if (!isCorrect) allCorrect = false;
+                        d3.select(this)
+                            .text(isCorrect ? "✔" : "✘")
+                            .attr("class", isCorrect ? "status-text-tab6 point-correct" : "status-text-tab6 point-incorrect");
+                    });
+
+                let x_start = -0.5, x_end = 1.5, y_start, y_end;
+                if (w2 !== 0) { y_start = (-w1/w2)*x_start + (wb/w2); y_end = (-w1/w2)*x_end + (wb/w2); }
+                else if (w1 !== 0) { x_start = wb/w1; x_end = wb/w1; y_start = -0.5; y_end = 1.5; }
+                else { x_start = -0.5; x_end = -0.5; y_start = -0.5; y_end = -0.5; }
+                const lineCoordsIn = [{ x: xScaleIn(x_start), y: yScaleIn(y_start) }, { x: xScaleIn(x_end), y: yScaleIn(y_end) }];
+                
+                let lineIn = chartGroupIn.selectAll("#boundary-line-tab6").data([lineCoordsIn]);
+                lineIn.enter().append("line").attr("id", "boundary-line-tab6").merge(lineIn)
+                    .attr("x1", d=>d[0].x).attr("y1", d=>d[0].y).attr("x2", d=>d[1].x).attr("y2", d=>d[1].y)
+                    .attr("stroke", "#f97316").attr("stroke-width", 3);
+
+                // --- Update Weight Space ---
+                constraintsGroup.selectAll("*").remove(); // Clear old constraints
+                const constraints = [];
+                data.forEach(d => {
+                    // w1*x1 + w2*x2 - wb > 0 (for y=1)
+                    // w1*x1 + w2*x2 - wb <= 0 (for y=0)
+                    constraints.push({x1: d.x1, x2: d.x2, y: d.y});
+                });
+
+                // Define clip path
+                constraintsGroup.append("defs").append("clipPath").attr("id", "clip-weight-space")
+                    .append("rect").attr("x", 0).attr("y", 0).attr("width", chartWidthW).attr("height", chartHeightW);
+                
+                // Draw constraint lines
+                constraints.forEach((d, i) => {
+                    // Line is w1*x1 + w2*x2 = wb
+                    let w1_start = -1, w1_end = 3, w2_start, w2_end;
+                    if (d.x2 !== 0) { w2_start = (wb - w1*d.x1)/d.x2; w2_end = (wb - w1_end*d.x1)/d.x2; }
+                    else if (d.x1 !== 0) { w1_start = wb/d.x1; w1_end = wb/d.x1; w2_start = -1; w2_end = 3; }
+                    else { w1_start=100; w1_end=100; w2_start=100; w2_end=100; } // No line for (0,0)
+
+                    constraintsGroup.append("line").attr("class", "constraint-line")
+                        .attr("x1", xScaleW(w1_start)).attr("y1", yScaleW(w2_start))
+                        .attr("x2", xScaleW(w1_end)).attr("y2", yScaleW(w2_end))
+                        .attr("clip-path", "url(#clip-weight-space)");
+                });
+
+                // Draw solution region (as a polygon)
+                // This is tricky. For AND, it's w2<=wb, w1<=wb, w1+w2>wb
+                // For OR, it's w2>wb, w1>wb, w1+w2>wb (assuming wb=0.5)
+                let solutionPoints = [];
+                const [x_min, x_max] = xScaleW.domain();
+                const [y_min, y_max] = yScaleW.domain();
+
+                if (currentGate === 'and') {
+                    // w1+w2=wb, w1=wb, w2=wb
+                    solutionPoints = [
+                        [xScaleW(wb), yScaleW(wb)], // (wb, wb)
+                        [xScaleW(wb), yScaleW(wb - wb)], // (wb, 0) -> no, (wb, wb-w1)
+                        [xScaleW(wb), yScaleW(x_max)], // (wb, 3)
+                        [xScaleW(x_max), yScaleW(x_max)],
+                        [xScaleW(x_max), yScaleW(wb)],
+                    ];
+                    // This is hard to do generally. Let's just color the point.
+                }
+
+                // Update draggable point
+                weightPoint
+                    .attr("cx", xScaleW(w1))
+                    .attr("cy", yScaleW(w2))
+                    .attr("class", allCorrect ? "weight-point correct" : "weight-point");
+            }
+            
+            // --- Drag Logic ---
+            const drag = d3.drag()
+                .on("drag", function(event) {
+                    const w1 = xScaleW.invert(event.x);
+                    const w2 = yScaleW.invert(event.y);
+                    w1Input.value = w1.toFixed(2);
+                    w2Input.value = w2.toFixed(2);
+                    updatePlots();
+                });
+            weightPoint.call(drag);
+
+            // --- Event Listeners ---
+            [w1Input, w2Input, wbInput].forEach(input => {
+                input.addEventListener('input', updatePlots);
+            });
+
+            andBtn.addEventListener('click', () => {
+                currentGate = 'and';
+                andBtn.classList.add('active');
+                orBtn.classList.remove('active');
+                w1Input.value = 1.0; w2Input.value = 1.0; wbInput.value = 1.5;
+                updatePlots();
+            });
+
+            orBtn.addEventListener('click', () => {
+                currentGate = 'or';
+                orBtn.classList.add('active');
+                andBtn.classList.remove('active');
+                w1Input.value = 1.0; w2Input.value = 1.0; wbInput.value = 0.5;
+                updatePlots();
+            });
+
+            andBtn.click(); // Initial call
+        }
+
+
         // --- Main Tab Switching Logic ---
         document.addEventListener('DOMContentLoaded', function() {
-            const tabBtn1 = document.getElementById('tabBtn1'), tabBtn2 = document.getElementById('tabBtn2'), tabBtn3 = document.getElementById('tabBtn3');
-            const tabContent1 = document.getElementById('tabContent1'), tabContent2 = document.getElementById('tabContent2'), tabContent3 = document.getElementById('tabContent3');
-            let isTab1Initialized = false, isTab2Initialized = false, isTab3Initialized = false;
+            const tabButtons = [
+                { btn: document.getElementById('tabBtn1'), content: document.getElementById('tabContent1'), init: initializeBoundaryTab },
+                { btn: document.getElementById('tabBtn2'), content: document.getElementById('tabContent2'), init: initializeNetworkTab },
+                { btn: document.getElementById('tabBtn3'), content: document.getElementById('tabContent3'), init: initializeComplexNetworkTab },
+                { btn: document.getElementById('tabBtn4'), content: document.getElementById('tabContent4'), init: initializeDeltaRuleTab },
+                { btn: document.getElementById('tabBtn5'), content: document.getElementById('tabContent5'), init: initializeLogicGateTab },
+                { btn: document.getElementById('tabBtn6'), content: document.getElementById('tabContent6'), init: initializeInputWeightSpaceTab }
+            ];
+            
+            let initializedTabs = [false, false, false, false, false, false];
 
-            function showTab1() {
-                tabContent1.classList.remove('hidden'); tabContent2.classList.add('hidden'); tabContent3.classList.add('hidden');
-                tabBtn1.classList.add('active'); tabBtn2.classList.remove('active'); tabBtn3.classList.remove('active');
-                if (!isTab1Initialized) { initializeBoundaryTab(); isTab1Initialized = true; }
+            function showTab(index) {
+                tabButtons.forEach((tab, i) => {
+                    if (i === index) {
+                        tab.content.classList.remove('hidden');
+                        tab.btn.classList.add('active');
+                        if (!initializedTabs[i]) {
+                            tab.init();
+                            initializedTabs[i] = true;
+                        }
+                    } else {
+                        tab.content.classList.add('hidden');
+                        tab.btn.classList.remove('active');
+                    }
+                });
             }
-            function showTab2() {
-                tabContent1.classList.add('hidden'); tabContent2.classList.remove('hidden'); tabContent3.classList.add('hidden');
-                tabBtn1.classList.remove('active'); tabBtn2.classList.add('active'); tabBtn3.classList.remove('active');
-                if (!isTab2Initialized) { initializeNetworkTab(); isTab2Initialized = true; }
-            }
-            function showTab3() {
-                tabContent1.classList.add('hidden'); tabContent2.classList.add('hidden'); tabContent3.classList.remove('hidden');
-                tabBtn1.classList.remove('active'); tabBtn2.classList.remove('active'); tabBtn3.classList.add('active');
-                if (!isTab3Initialized) { initializeComplexNetworkTab(); isTab3Initialized = true; }
-            }
-            tabBtn1.addEventListener('click', showTab1);
-            tabBtn2.addEventListener('click', showTab2);
-            tabBtn3.addEventListener('click', showTab3);
-            showTab1(); // Initialize the first tab on page load
+
+            tabButtons.forEach((tab, i) => {
+                tab.btn.addEventListener('click', () => showTab(i));
+            });
+            
+            showTab(0); // Initialize the first tab on page load
         });
     </script>
 </body>
